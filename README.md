@@ -6,7 +6,7 @@ It is designed to provide a clean, smooth, and user-friendly shopping experience
 
 ## 🚀 Live Demo
 
-👉 **[View Shopora Live Demo](YOUR-NETLIFY-LINK-HERE)**
+👉 **[View Shopora Live Demo](https://shopora-market.netlify.app/)**
 
 ## ✨ Features
 
