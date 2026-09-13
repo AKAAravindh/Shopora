@@ -22,7 +22,9 @@ const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
   const { wishlistItems, toggleWishlist } = useWishlist();
 
-  const onWishlist = wishlistItems.some((item) => item.id === id);
+  const onWishlist = wishlistItems.some(
+    (item) => item.id?.toString() === id?.toString(),
+  );
 
   const productSlug = name
     .toLowerCase()

@@ -5,6 +5,7 @@ import products from "../utils/products";
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { useWishlist } from "../hooks/useWishlist";
 import { FiHeart } from "react-icons/fi";
+import { useCart } from "../hooks/useCart";
 
 const ProductDetails = () => {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -70,9 +71,12 @@ const ProductDetails = () => {
     }
   };
 
+  const { addToCart } = useCart();
   const { wishlistItems, toggleWishlist } = useWishlist();
 
-  const onWishlist = wishlistItems.some((item) => item.id === id);
+  const onWishlist = wishlistItems.some(
+    (item) => item.id?.toString() === id?.toString(),
+  );
 
   // Color classes for the color swatches - TEMP
   const colorClasses = {
@@ -388,7 +392,10 @@ const ProductDetails = () => {
 
             {/* Buttons */}
             <div className="mt-7 flex gap-3">
-              <button className="flex-1 rounded-xl bg-gray-900 py-3.5 text-sm font-semibold text-white transition hover:bg-gray-700 active:scale-[0.99] cursor-pointer">
+              <button
+                onClick={() => addToCart(selectedProduct)}
+                className="flex-1 rounded-xl bg-gray-900 py-3.5 text-sm font-semibold text-white transition hover:bg-gray-700 active:scale-[0.99] cursor-pointer"
+              >
                 Add to Cart
               </button>
 
@@ -398,8 +405,20 @@ const ProductDetails = () => {
             </div>
 
             {/* Wishlist */}
-            <button className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3 text-sm font-medium text-gray-700 transition hover:border-gray-400 hover:text-gray-900 cursor-pointer">
-              ♡ Add to Wishlist
+            <button
+              onClick={() => toggleWishlist(selectedProduct)}
+              className={`mt-4 flex items-center justify-center gap-2 rounded-xl border border-gray-900 py-3.5 text-sm font-semibold text-gray-900 transition hover:bg-gray-50 active:scale-[0.99] cursor-pointer ${
+                onWishlist
+                  ? "text-white bg-red-500 hover:bg-red-600"
+                  : "text-gray-900 bg-white"
+              }`}
+            >
+              <FiHeart
+                size={16}
+                stroke="currentColor"
+                fill={onWishlist ? "currentColor" : "none"}
+              />
+              {onWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
             </button>
 
             {/* Delivery */}
