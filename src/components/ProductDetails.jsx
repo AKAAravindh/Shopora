@@ -34,7 +34,6 @@ const ProductDetails = () => {
     sizes,
     colors,
     tags,
-    image,
     images,
     description,
   } = selectedProduct;
