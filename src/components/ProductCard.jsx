@@ -37,7 +37,7 @@ const ProductCard = ({ product }) => {
     .replace(/(^-|-$)/g, "");
 
   return (
-    <article className="group w-full min-w-0">
+    <article className="group w-full max-w-[120px] lg:max-w-none lg:min-w-0 cursor-pointer">
       {/* ================= IMAGE ================= */}
       <div className="relative aspect-square overflow-hidden rounded-2xl bg-gray-100">
         <Link
@@ -52,7 +52,7 @@ const ProductCard = ({ product }) => {
         </Link>
 
         {/* Top badges */}
-        <div className="absolute left-3 top-3 flex flex-col gap-1.5 cursor-pointer">
+        <div className="absolute lg:left-3 justify-between lg:justify-normal lg:px-0 px-2 w-full top-3 flex lg:flex-col lg:gap-1.5 cursor-pointer">
           {discount > 0 && (
             <span className="w-fit rounded-full bg-black px-2.5 py-1 text-[10px] font-semibold text-white">
               -{discount}%
@@ -77,7 +77,7 @@ const ProductCard = ({ product }) => {
           type="button"
           onClick={() => toggleWishlist(product)}
           aria-label={onWishlist ? "Remove from wishlist" : "Add to wishlist"}
-          className={`absolute right-3 top-3 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full shadow-sm backdrop-blur transition-all duration-300 ${
+          className={`absolute right-3 top-3 h-9 w-9 cursor-pointer items-center justify-center rounded-full shadow-sm backdrop-blur transition-all duration-300 hidden lg:flex ${
             onWishlist
               ? "bg-white text-red-500 hover:text-red-600"
               : "bg-white/90 text-gray-700 hover:bg-white hover:text-red-500"
@@ -91,7 +91,7 @@ const ProductCard = ({ product }) => {
           type="button"
           onClick={() => addToCart(product)}
           aria-label="Add to cart"
-          className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-900 shadow-lg transition-all duration-300 hover:bg-black hover:text-white cursor-pointer"
+          className="absolute bottom-3 right-3 hidden lg:flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-900 shadow-lg transition-all duration-300 hover:bg-black hover:text-white cursor-pointer"
         >
           <FiShoppingBag size={17} />
         </button>

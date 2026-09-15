@@ -77,7 +77,7 @@ const HeroSection = () => {
   const slide = heroSlides[activeSlide];
 
   return (
-    <section className="mx-20 max-w-[1920px] px-4 pt-4 sm:px-6 lg:mx-30 lg:px-8">
+    <section className="max-w-[1920px] px-4 pt-4 sm:px-6 mx-0 lg:px-8">
       <div className="relative min-h-125 overflow-hidden rounded-3xl bg-gray-100">
         {/* Background image */}
         <AnimatePresence mode="sync">

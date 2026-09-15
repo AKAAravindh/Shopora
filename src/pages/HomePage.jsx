@@ -16,7 +16,7 @@ function HomePage() {
       <HeroSlides />
 
       {/* ================= CATEGORIES ================= */}
-      <section className="mx-20 lg:mx-30 max-w-[1920px] px-4 py-16 sm:px-6 lg:px-8">
+      <section className="lg:mx-0 max-w-[1920px] px-4 py-10 pb-4 lg:py-16 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-end justify-between">
           <div>
             <p className="text-sm font-medium text-gray-500">Explore</p>
@@ -115,7 +115,7 @@ function HomePage() {
 
       {/* ================= FEATURED PRODUCTS ================= */}
       {featuredProducts.length > 0 && (
-        <section className="mx-20 lg:mx-30 max-w-[1920px] px-4 pb-16 sm:px-6 lg:px-8">
+        <section className="lg:mx-0 max-w-[1920px] px-4 py-4 lg:py-8 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-end justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500">
@@ -135,7 +135,7 @@ function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="flex lg:grid gap-4 overflow-scroll lg:grid-cols-4 pb-3 lg:pb-0 scrollbar-none">
             {featuredProducts.slice(0, 8).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -144,7 +144,7 @@ function HomePage() {
       )}
 
       {/* ================= PROMOTIONAL BANNER ================= */}
-      <section className="mx-20 lg:mx-30 max-w-[1920px] px-4 pb-16 sm:px-6 lg:px-8">
+      <section className="lg:mx-10 max-w-[1920px] px-4 py-4 lg:py-10 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-3xl bg-gray-900">
           <div className="absolute inset-0">
             <img
@@ -180,8 +180,8 @@ function HomePage() {
 
       {/* ================= BEST SELLERS ================= */}
       {bestSellingProducts.length > 0 && (
-        <section className="bg-gray-50 py-16">
-          <div className="mx-20 lg:mx-30 max-w-[1920px] px-4 sm:px-6 lg:px-8">
+        <section className="bg-white py-4 lg:py-8">
+          <div className="lg:mx-0 max-w-[1920px] px-4 sm:px-6 lg:px-8">
             <div className="mb-8 flex items-end justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">
@@ -201,7 +201,7 @@ function HomePage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <div className="flex lg:grid gap-4 overflow-scroll lg:grid-cols-4 pb-3 lg:pb-0 scrollbar-none">
               {bestSellingProducts.slice(0, 8).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -212,7 +212,7 @@ function HomePage() {
 
       {/* ================= NEW ARRIVALS ================= */}
       {newArrivalProducts.length > 0 && (
-        <section className="mx-20 lg:mx-30 max-w-[1920px] px-4 py-16 sm:px-6 lg:px-8">
+        <section className="lg:mx-0 max-w-[1920px] px-4 py-4 lg:py-8 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-end justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500">Just dropped</p>
@@ -230,7 +230,7 @@ function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="flex lg:grid gap-4 overflow-scroll lg:grid-cols-4 pb-3 lg:pb-0 scrollbar-none">
             {newArrivalProducts.slice(0, 8).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -240,8 +240,8 @@ function HomePage() {
 
       {/* ================= BENEFITS ================= */}
       <section className="border-t border-gray-200 bg-white">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 divide-y divide-gray-200 px-4 sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4 py-8 sm:px-8">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 divide-y divide-gray-200 px-0 sm:grid-cols-3 sm:divide-x sm:divide-y-0 lg:px-8 justify-items-center lg:justify-items-normal">
+          <div className="flex items-center gap-4 py-8 lg:px-8">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xl">
               🚚
             </div>
@@ -255,7 +255,7 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 py-8 sm:px-8">
+          <div className="flex items-center gap-4 py-8 lg:px-8">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xl">
               ↩
             </div>
@@ -271,7 +271,7 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 py-8 sm:px-8">
+          <div className="flex items-center gap-4 py-8 lg:px-8">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xl">
               ✓
             </div>

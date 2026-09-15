@@ -52,7 +52,7 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white">
       {/* ================= DESKTOP HEADER ================= */}
-      <div className="mx-30 max-w-[1920px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-4 sm:mx-10 lg:mx-0 max-w-[1920px] px-4 sm:px-6 lg:px-16">
         <div className="flex h-20 items-center justify-between gap-6">
           {/* Logo */}
           <Link
@@ -73,7 +73,7 @@ const Header = () => {
               <input
                 type="search"
                 placeholder="Search products..."
-                className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50 pl-11 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:bg-white"
+                className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50 pl-11 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:bg-white cursor-text"
               />
             </form>
           </div>
@@ -176,13 +176,13 @@ const Header = () => {
       {/* ================= DESKTOP NAV ================= */}
       <nav className="hidden border-t border-gray-100 md:block">
         <div className="mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-8">
-          <div className="flex min-h-12 items-center justify-center gap-x-8 mb-5 gap-y-3 flex-wrap w-full">
+          <div className="flex min-h-12 items-center justify-center gap-x-6 flex-wrap w-full">
             {navItems.map((item) => (
               <NavLink
                 key={item.name}
                 to={item.path}
                 className={({ isActive }) =>
-                  `relative flex h-full whitespace-nowrap items-center text-sm font-medium transition ${
+                  `relative flex h-full whitespace-nowrap items-center text-sm font-medium transition p-2 ${
                     isActive
                       ? "text-gray-900"
                       : "text-gray-500 hover:text-gray-900"
