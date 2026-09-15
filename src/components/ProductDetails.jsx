@@ -159,11 +159,11 @@ const ProductDetails = () => {
             </div>
 
             {/* Main Image */}
-            <div className="relative overflow-hidden rounded-2xl bg-white">
+            <div className="relative overflow-hidden rounded-2xl bg-white aspect-square w-full h-min">
               <img
                 src={images[selectedImage]}
                 alt={name}
-                className="object-cover transition duration-500 hover:scale-105"
+                className="object-cover h-full w-full transition duration-500 hover:scale-105"
               />
 
               {/* Discount Badge */}
@@ -408,7 +408,7 @@ const ProductDetails = () => {
             {/* Wishlist */}
             <button
               onClick={() => toggleWishlist(selectedProduct)}
-              className={`mt-4 flex items-center justify-center gap-2 rounded-xl border border-gray-900 py-3.5 text-sm font-semibold text-gray-900 transition hover:bg-gray-50 active:scale-[0.99] cursor-pointer ${
+              className={`mt-4 flex items-center justify-center gap-2 rounded-xl border border-gray-200 py-3.5 text-sm font-semibold text-gray-900 transition hover:bg-gray-50 active:scale-[0.99] cursor-pointer ${
                 onWishlist
                   ? "text-white bg-red-500 hover:bg-red-600"
                   : "text-gray-900 bg-white"
@@ -649,7 +649,7 @@ const ProductDetails = () => {
             </button>
           </div>
 
-          <div className="mt-6 grid gap-5 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8">
+          <div className="mt-6 grid gap-5 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 3xl:grid-cols-8">
             {relatedProducts.slice(0, 8).map((item, index) => (
               <div
                 key={item.id ?? index}
