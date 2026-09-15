@@ -14,7 +14,7 @@ const Wishlist = lazy(() => import("./pages/WishlistPage"));
 function App() {
   return (
     <>
-      <SmoothScroll />
+      {/* <SmoothScroll /> */}
       <ScrollToTop />
       <Header />
 
