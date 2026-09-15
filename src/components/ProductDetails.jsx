@@ -108,9 +108,9 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 mx-auto max-w-[1920px]">
       {/* Breadcrumb */}
-      <div className="mx-auto max-w-7xl px-6 pt-6">
+      <div className="mx-auto lg:mx-0 max-w-[1920px] px-4 lg:px-8 pt-6">
         <div className="flex items-center gap-2 text-xs text-gray-400">
           <Link to="/" className="cursor-pointer hover:text-gray-900">
             Home
@@ -132,21 +132,22 @@ const ProductDetails = () => {
       </div>
 
       {/* Main Product */}
-      <main className="mx-auto max-w-7xl px-6 py-8">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+      <main className="mx-auto lg:mx-0 max-w-[1920px] lg:px-8 px-4 py-8">
+        <div className="grid grid-cols-1 lg:gap-4 xl:gap-6 lg:grid-cols-[500px_1fr] xl:grid-cols-[700px_1fr]">
           {/* ================= IMAGE SECTION ================= */}
-          <div className="flex flex-col-reverse sm:flex-row gap-4">
+          <div className="flex flex-col-reverse xl:flex-row gap-2">
             {/* Thumbnails */}
-            <div className="flex w-19 flex-col gap-3">
+            <div className="flex xl:flex-col flex-row gap-2 min-w-max overflow-x-auto scrollbar-hide p-1 mb-auto">
               {images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`h-19 w-19 overflow-hidden rounded-lg border ring-2 border-transparent bg-white transition-all duration-300 ${
-                    selectedImage === index
-                      ? "ring-blue-600 ring-offset-0"
-                      : "hover:ring-white ring-2 hover:cursor-pointer ring-transparent"
-                  }`}
+                  className={`h-19 w-19 overflow-hidden rounded-lg border ring-2 border-transparent bg-white transition-all duration-300 shrink-0
+                     ${
+                       selectedImage === index
+                         ? "ring-blue-600 ring-offset-0"
+                         : "hover:ring-white ring-2 hover:cursor-pointer ring-transparent"
+                     }`}
                 >
                   <img
                     src={image}
@@ -158,11 +159,11 @@ const ProductDetails = () => {
             </div>
 
             {/* Main Image */}
-            <div className="relative flex-1 overflow-hidden rounded-2xl bg-white">
+            <div className="relative overflow-hidden rounded-2xl bg-white">
               <img
                 src={images[selectedImage]}
                 alt={name}
-                className="h-140 w-full object-cover"
+                className="object-cover transition duration-500 hover:scale-105"
               />
 
               {/* Discount Badge */}
@@ -217,7 +218,7 @@ const ProductDetails = () => {
             </p>
 
             {/* Product Name */}
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900">
+            <h1 className="mt-2 text-2xl font-bold tracking-tight text-gray-900">
               {name}
             </h1>
 
@@ -249,7 +250,7 @@ const ProductDetails = () => {
 
             {/* Price */}
             <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold text-gray-900">${price}</span>
+              <span className="text-2xl font-bold text-gray-900">${price}</span>
 
               <span className="text-lg text-gray-400 line-through">
                 ${originalPrice}
@@ -318,10 +319,10 @@ const ProductDetails = () => {
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`flex h-11 min-w-12 items-center justify-center rounded-lg border px-4 text-sm font-medium transition cursor-pointer ${
+                    className={`flex h-11 min-w-12 items-center justify-center rounded-lg border px-4 text-sm font-medium transition cursor-pointer outline-0 ${
                       selectedSize === size
                         ? "border-gray-900 bg-gray-900 text-white"
-                        : "border-gray-200 bg-white text-gray-700 hover:border-gray-900"
+                        : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
                     }`}
                   >
                     {size}
@@ -648,13 +649,11 @@ const ProductDetails = () => {
             </button>
           </div>
 
-          <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-6 grid gap-5 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8">
             {relatedProducts.slice(0, 8).map((item, index) => (
               <div
                 key={item.id ?? index}
                 className={`group overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
-                  index >= 2 ? "hidden sm:block" : ""
-                } ${index >= 4 ? "sm:hidden md:block" : ""} ${
                   index >= 6 ? "md:hidden lg:block" : ""
                 }`}
               >

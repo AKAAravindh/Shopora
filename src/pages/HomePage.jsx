@@ -212,7 +212,7 @@ function HomePage() {
 
       {/* ================= NEW ARRIVALS ================= */}
       {newArrivalProducts.length > 0 && (
-        <section className="lg:mx-0 max-w-[1920px] px-4 py-4 lg:py-8 sm:px-6 lg:px-8">
+        <section className="lg:mx-0 max-w-[1920px] lg:px-8 px-4 py-4 lg:py-8 sm:px-6">
           <div className="mb-8 flex items-end justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500">Just dropped</p>
@@ -240,8 +240,8 @@ function HomePage() {
 
       {/* ================= BENEFITS ================= */}
       <section className="border-t border-gray-200 bg-white">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 divide-y divide-gray-200 px-0 sm:grid-cols-3 sm:divide-x sm:divide-y-0 lg:px-8 justify-items-center lg:justify-items-normal">
-          <div className="flex items-center gap-4 py-8 lg:px-8">
+        <div className="mx-auto grid max-w-[1920px] divide-y divide-gray-200 px-0 grid-cols-[1fr_1fr_1fr] sm:divide-x sm:divide-y-0 lg:px-8 justify-items-center lg:justify-items-normal  ">
+          <div className="flex flex-col md:flex-row items-center gap-4 py-8 lg:px-8 text-center justify-center mx-auto lg:text-left w-full">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xl">
               🚚
             </div>
@@ -255,7 +255,7 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 py-8 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center gap-4 py-8 lg:px-8 text-center justify-center mx-auto lg:text-left w-full">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xl">
               ↩
             </div>
@@ -271,7 +271,7 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 py-8 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center gap-4 py-8 lg:px-8 text-center justify-center mx-auto lg:text-left w-full">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xl">
               ✓
             </div>
