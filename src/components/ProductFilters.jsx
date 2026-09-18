@@ -1,6 +1,48 @@
-const ProductFilters = () => {
+import { useEffect, useState } from "react";
+import { getProducts } from "../utils/api";
+
+const ProductFilters = ({
+  selectedCategories,
+  setSelectedCategories,
+  pageTitle,
+  minPrice,
+  maxPrice,
+  setPriceRange,
+}) => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    getProducts()
+      .then((data) => {
+        setProducts(Array.isArray(data) ? data : []);
+      })
+      .catch((error) => {
+        console.error("Failed to load products", error);
+      });
+  }, []);
+  const productCategories = products.reduce((acc, product) => {
+    const category = product.category;
+
+    if (!category) {
+      return acc;
+    }
+
+    const existingCategory = acc.find((item) => item.name === category);
+
+    if (existingCategory) {
+      existingCategory.count += 1;
+    } else {
+      acc.push({
+        name: category,
+        count: 1,
+      });
+    }
+
+    return acc;
+  }, []);
+
   return (
-    <aside className="sticky top-5 w-[250px] shrink-0 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <aside className="sticky top-0 w-62.5 shrink-0 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm h-screen">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
         <div>
@@ -10,58 +52,59 @@ const ProductFilters = () => {
           </p>
         </div>
 
-        <button className="text-[10px] font-semibold text-gray-400 transition hover:text-gray-900">
+        <button
+          onClick={() => setSelectedCategories([])}
+          className="text-[10px] font-semibold text-gray-400 transition hover:text-gray-900"
+        >
           Clear all
         </button>
       </div>
-
       {/* Scrollable Content */}
-      <div className="max-h-[calc(100vh-130px)] overflow-y-auto px-5 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400">
-        <div className="space-y-6 py-5">
+      <div className="overflow-scroll px-5 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400">
+        <div className="space-y-6 py-5 pb-2 mb-2 h-auto overflow-auto">
           {/* Categories */}
-          <section>
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-wide text-gray-900">
-                Categories
-              </h3>
+          {pageTitle === "All Products" && (
+            <section className="border-b border-gray-100 pb-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wide text-gray-900">
+                  Categories
+                </h3>
+              </div>
 
-              <span className="text-[10px] text-gray-400">8</span>
-            </div>
+              <div className="space-y-2.5">
+                {productCategories.map(({ name, count }) => (
+                  <label
+                    key={name}
+                    className="group flex cursor-pointer items-center justify-between text-xs text-gray-600"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <input
+                        type="checkbox"
+                        checked={selectedCategories.includes(name)}
+                        onChange={() => {
+                          setSelectedCategories((prev) =>
+                            prev.includes(name)
+                              ? prev.filter((category) => category !== name)
+                              : [...prev, name],
+                          );
+                        }}
+                        className="h-3.5 w-3.5 cursor-pointer rounded border-gray-300 accent-gray-900"
+                      />
 
-            <div className="space-y-2.5">
-              {[
-                ["All Products", "124"],
-                ["Shoes", "32"],
-                ["Clothing", "28"],
-                ["Bags", "18"],
-                ["Accessories", "16"],
-                ["Electronics", "14"],
-                ["Home", "10"],
-                ["Sports", "6"],
-              ].map(([name, count]) => (
-                <label
-                  key={name}
-                  className="group flex cursor-pointer items-center justify-between text-xs text-gray-600"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <input
-                      type="checkbox"
-                      className="h-3.5 w-3.5 cursor-pointer rounded border-gray-300 accent-gray-900"
-                    />
+                      <span className="transition group-hover:text-gray-900">
+                        {name}
+                      </span>
+                    </div>
 
-                    <span className="transition group-hover:text-gray-900">
-                      {name}
-                    </span>
-                  </div>
-
-                  <span className="text-[10px] text-gray-400">{count}</span>
-                </label>
-              ))}
-            </div>
-          </section>
+                    <span className="text-[10px] text-gray-400">{count}</span>
+                  </label>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Price */}
-          <section className="border-t border-gray-100 pt-5">
+          <section>
             <h3 className="mb-3 text-xs font-bold uppercase tracking-wide text-gray-900">
               Price
             </h3>
@@ -75,6 +118,13 @@ const ProductFilters = () => {
                 <input
                   type="number"
                   placeholder="Min"
+                  value={minPrice}
+                  onChange={(e) =>
+                    setPriceRange((prev) => ({
+                      ...prev,
+                      min: e.target.value,
+                    }))
+                  }
                   className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-6 pr-2 text-xs text-gray-900 outline-none transition focus:border-gray-400 focus:bg-white"
                 />
               </div>
@@ -89,6 +139,13 @@ const ProductFilters = () => {
                 <input
                   type="number"
                   placeholder="Max"
+                  value={maxPrice}
+                  onChange={(e) =>
+                    setPriceRange((prev) => ({
+                      ...prev,
+                      max: e.target.value,
+                    }))
+                  }
                   className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-6 pr-2 text-xs text-gray-900 outline-none transition focus:border-gray-400 focus:bg-white"
                 />
               </div>
@@ -155,7 +212,7 @@ const ProductFilters = () => {
                 ["4", "Excellent"],
                 ["3", "Good"],
                 ["2", "Average"],
-              ].map(([rating, label]) => (
+              ].map(([rating]) => (
                 <label
                   key={rating}
                   className="group flex cursor-pointer items-center gap-2.5"
@@ -255,7 +312,6 @@ const ProductFilters = () => {
           </section>
         </div>
       </div>
-
       {/* Bottom Action */}
       <div className="border-t border-gray-100 bg-white p-4">
         <button className="w-full rounded-lg bg-gray-900 py-2.5 text-xs font-semibold text-white transition hover:bg-gray-700 active:scale-[0.98]">

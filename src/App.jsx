@@ -1,9 +1,9 @@
-import { Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import PageLoader from "./components/PageLoader";
+import { Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
+import PageLoader from "./components/PageLoader";
 import ScrollToTop from "./components/ScrollToTop";
-import SmoothScroll from "./components/SmoothScroll";
+// import SmoothScroll from "./components/SmoothScroll";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const AllProducts = lazy(() => import("./pages/AllProducts"));

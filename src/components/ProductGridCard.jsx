@@ -29,11 +29,11 @@ const ProductGridCard = ({ product }) => {
   const onWishlist = wishlistItems.some((item) => item.id === id);
 
   return (
-    <div className="group min-w-50 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg select-none">
+    <div className="group md:min-w-50 overflow-hidden rounded-md md:rounded-xl md:border border-gray-200 bg-white md:shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg select-none relative isolate">
       {/* Clickable Product Area */}
       <Link to={`/products/${categorySlug}/${nameSlug}/${id}`}>
         {/* Image */}
-        <div className="relative h-55 overflow-hidden bg-gray-100">
+        <div className="relative h-40 md:h-55 overflow-hidden bg-gray-100">
           <img
             src={image}
             alt={name}
@@ -42,15 +42,15 @@ const ProductGridCard = ({ product }) => {
 
           {/* Product Badge */}
           {newArrival ? (
-            <span className="absolute left-2 top-2 rounded-md bg-gray-900 px-2 py-1 text-[10px] font-semibold text-white">
+            <span className="absolute left-2 top-3 rounded-md bg-gray-900 px-2 py-1 text-[10px] font-semibold text-white">
               NEW
             </span>
           ) : bestSelling ? (
-            <span className="absolute left-2 top-2 rounded-md bg-orange-500 px-2 py-1 text-[10px] font-semibold text-white">
+            <span className="absolute left-2 top-3 rounded-md bg-orange-500 px-2 py-1 text-[10px] font-semibold text-white">
               BEST SELLER
             </span>
           ) : (
-            <span className="absolute left-2 top-2 rounded-md bg-red-500 px-2 py-1 text-[10px] font-semibold text-white">
+            <span className="absolute left-2 top-3 rounded-md bg-red-500 px-2 py-1 text-[10px] font-semibold text-white">
               {discount}% OFF
             </span>
           )}
@@ -62,7 +62,7 @@ const ProductGridCard = ({ product }) => {
         type="button"
         onClick={() => toggleWishlist(product)}
         aria-label={onWishlist ? "Remove from wishlist" : "Add to wishlist"}
-        className={`absolute right-3 top-3 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full shadow-sm backdrop-blur transition-all duration-300 ${
+        className={`absolute right-3 top-2 sm:top-3 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full shadow-sm backdrop-blur transition-all duration-300 ${
           onWishlist
             ? "bg-red-500 text-white"
             : "bg-white text-gray-700 hover:bg-red-500 hover:text-white"
@@ -73,12 +73,12 @@ const ProductGridCard = ({ product }) => {
 
       {/* Details */}
       <Link to={`/products/${categorySlug}/${nameSlug}/${id}`}>
-        <div className="p-3.5">
+        <div className="p-2.5 pb-1 md:p-3.5">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
             {brand}
           </p>
 
-          <h3 className="mt-1 truncate text-sm font-semibold text-gray-900">
+          <h3 className="mt-px md:mt-1 truncate text-sm font-semibold text-gray-900">
             {name}
           </h3>
 
@@ -90,7 +90,7 @@ const ProductGridCard = ({ product }) => {
             <span className="text-[10px] text-gray-400">{reviews} reviews</span>
           </div>
 
-          <div className="mt-2 flex items-center gap-2">
+          <div className="mt-1 md:mt-2 flex items-center gap-2">
             <span className="text-lg font-bold text-gray-900">${price}</span>
 
             <span className="text-xs text-gray-400 line-through">
@@ -105,7 +105,7 @@ const ProductGridCard = ({ product }) => {
       </Link>
 
       {/* Non-clickable controls */}
-      <div className="px-3.5 pb-3.5">
+      <div className="px-2.5 md:px-3.5 pb-2.5 md:pb-3.5">
         <div className="flex items-center justify-between gap-3">
           {stock ? (
             <span className="text-[10px] font-medium text-green-600">

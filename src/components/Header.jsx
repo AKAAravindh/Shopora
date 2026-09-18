@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import {
   FiMenu,
@@ -11,14 +11,25 @@ import {
 } from "react-icons/fi";
 import { useCart } from "../hooks/useCart";
 import { useWishlist } from "../hooks/useWishlist";
-import products from "../utils/products";
+import { getProducts } from "../utils/api";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [products, setProducts] = useState([]);
 
   const { cartItems } = useCart();
   const { wishlistItems } = useWishlist();
+
+  useEffect(() => {
+    getProducts()
+      .then((data) => {
+        setProducts(Array.isArray(data) ? data : []);
+      })
+      .catch((error) => {
+        console.error("Failed to load products", error);
+      });
+  }, []);
 
   // Total number of products in cart
   const cartItemCount = cartItems.reduce(

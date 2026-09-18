@@ -35,14 +35,18 @@ const Cart = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="border-b border-gray-200 bg-white">
-        <div className="mx-auto max-w-[1920px] px-4 py-5 sm:px-6 lg:px-8">
+        <div className="lg:mx-10 max-w-[1920px] mx-auto p-4 md:py-5 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-gray-900">
                 Shopping Cart
               </h1>
               <p className="mt-1 text-sm text-gray-500">
-                {totalItems} items in your cart
+                {totalItems <= 0
+                  ? `Your cart is empty!`
+                  : totalItems === 1
+                    ? `1 item in your cart`
+                    : `${totalItems} items in your cart`}
               </p>
             </div>
 
@@ -58,12 +62,12 @@ const Cart = () => {
       </div>
 
       {/* Main */}
-      <main className="mx-auto max-w-[1920px] px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_380px]">
+      <main className="lg:mx-10 max-w-[1920px] p-4 md:py-8 mx-auto sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-[1fr_380px]">
           {/* LEFT SIDE */}
           <section className="space-y-4">
             {/* Cart Header */}
-            <div className="hidden rounded-xl border border-gray-200 bg-white px-6 py-4 md:flex md:items-center md:justify-between">
+            <div className="hidden rounded-xl border border-gray-200 bg-white px-6 py-2 md:flex md:items-center md:justify-between">
               <p className="text-sm font-semibold text-gray-900">Cart Items</p>
 
               <button
@@ -78,7 +82,7 @@ const Cart = () => {
                     onConfirm: clearCart,
                   })
                 }
-                className="text-sm font-medium text-red-500 transition hover:text-red-600 cursor-pointer"
+                className="text-sm font-medium p-2 rounded-lg hover:bg-red-50 text-red-500 transition hover:text-red-600 cursor-pointer"
               >
                 Remove All
               </button>
@@ -92,7 +96,7 @@ const Cart = () => {
               >
                 <div className="flex gap-4 sm:gap-6">
                   {/* Image */}
-                  <div className="h-28 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100 sm:h-36 sm:w-32">
+                  <div className="h-28 aspect-square shrink-0 overflow-hidden rounded-xl bg-gray-100 sm:h-36 sm:w-36">
                     <img
                       src={item.image}
                       alt={item.name}
@@ -102,7 +106,7 @@ const Cart = () => {
 
                   {/* Details */}
                   <div className="min-w-0 flex-1">
-                    <div className="flex justify-between gap-3">
+                    <div className="flex justify-between md:gap-3">
                       <div>
                         <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
                           {item.brand}
@@ -125,7 +129,7 @@ const Cart = () => {
                             onConfirm: () => removeFromCart(item.id),
                           })
                         }
-                        className="shrink-0 rounded-lg p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-500 cursor-pointer"
+                        className="shrink-0 rounded-lg p-3 md:p-4 text-red-400 transition hover:bg-red-50 hover:text-red-500 cursor-pointer bg-gray-50"
                         title="Remove item"
                       >
                         <FiTrash2 size={18} />
@@ -133,7 +137,7 @@ const Cart = () => {
                     </div>
 
                     {/* Variant */}
-                    <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-500">
+                    <div className="mt-2 md:mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-500">
                       <span>
                         Size:{" "}
                         <strong className="font-medium text-gray-800">
@@ -150,9 +154,9 @@ const Cart = () => {
                     </div>
 
                     {/* Bottom */}
-                    <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
+                    <div className="mt-2 md:mt-4 flex flex-wrap items-end justify-between gap-4">
                       {/* Price */}
-                      <div>
+                      <div className="flex md:block gap-4 items-center">
                         <div className="flex items-center gap-2">
                           <span className="text-lg font-bold text-gray-900">
                             ₹{item.price.toLocaleString("en-IN")}
@@ -204,7 +208,7 @@ const Cart = () => {
             {/* Continue Shopping */}
             <Link
               to="/products"
-              className="flex w-fit items-center gap-2 pt-2 text-sm font-semibold text-gray-700 transition hover:text-black"
+              className="flex w-fit items-center gap-2 pt-2 mb-2 md:mb-0 text-sm font-semibold text-gray-700 transition hover:text-black animate-pulse"
             >
               <FiArrowLeft size={16} />
               Continue Shopping

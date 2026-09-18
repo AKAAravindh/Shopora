@@ -1,9 +1,22 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import HeroSlides from "../components/HeroSlides";
-import products from "../utils/products";
+import { getProducts } from "../utils/api";
 
 function HomePage() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    getProducts()
+      .then((data) => {
+        setProducts(Array.isArray(data) ? data : []);
+      })
+      .catch((error) => {
+        console.error("Failed tp load products:", error);
+      });
+  }, []);
+
   const featuredProducts = products.filter((product) => product.featured);
 
   const bestSellingProducts = products.filter((product) => product.bestSelling);

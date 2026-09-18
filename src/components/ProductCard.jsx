@@ -37,7 +37,7 @@ const ProductCard = ({ product }) => {
     .replace(/(^-|-$)/g, "");
 
   return (
-    <article className="group w-full max-w-[120px] lg:max-w-none lg:min-w-0 cursor-pointer">
+    <article className="group w-full max-w-35 lg:max-w-none lg:min-w-0 cursor-pointer">
       {/* ================= IMAGE ================= */}
       <div className="relative aspect-square overflow-hidden rounded-2xl bg-gray-100">
         <Link
@@ -52,9 +52,9 @@ const ProductCard = ({ product }) => {
         </Link>
 
         {/* Top badges */}
-        <div className="absolute lg:left-3 justify-between lg:justify-normal lg:px-0 px-2 w-full top-3 flex lg:flex-col lg:gap-1.5 cursor-pointer">
+        <div className="absolute lg:left-3 justify-between lg:justify-normal lg:px-0 px-2 w-full top-3 flex lg:flex-col lg:gap-1.5 lg:text-2xl cursor-pointer flex-wrap gap-y-2">
           {discount > 0 && (
-            <span className="w-fit rounded-full bg-black px-2.5 py-1 text-[10px] font-semibold text-white">
+            <span className="w-fit rounded-full bg-black px-2.5 py-1 text-[10px] font-semibold text-white whitespace-nowrap">
               -{discount}%
             </span>
           )}
@@ -66,7 +66,7 @@ const ProductCard = ({ product }) => {
           )}
 
           {bestSelling && !newArrival && (
-            <span className="w-fit rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold text-gray-900 shadow-sm">
+            <span className="w-fit rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold text-gray-900 shadow-sm whitespace-nowrap">
               Best Seller
             </span>
           )}

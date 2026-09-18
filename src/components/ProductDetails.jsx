@@ -1,11 +1,10 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
-import products from "../utils/products";
+import { useEffect, useState } from "react";
 import { BiMinus, BiPlus } from "react-icons/bi";
-import { useWishlist } from "../hooks/useWishlist";
 import { FiHeart } from "react-icons/fi";
+import { Link, useParams } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
+import { useWishlist } from "../hooks/useWishlist";
+import { getProductByID, getProducts } from "../utils/api";
 
 const ProductDetails = () => {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -13,9 +12,47 @@ const ProductDetails = () => {
   const [selectedColor, setSelectedColor] = useState("Black");
   const [quantity, setQuantity] = useState(1);
 
+  const { addToCart } = useCart();
+  const { wishlistItems, toggleWishlist } = useWishlist();
+
   const { id } = useParams();
 
-  const selectedProduct = products?.find((item) => item.id?.toString() === id);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+
+  useEffect(() => {
+    getProductByID(id)
+      .then((product) => {
+        setSelectedProduct(product);
+      })
+      .catch((error) => {
+        console.error("Failed to load product:", error);
+      });
+  }, [id]);
+
+  useEffect(() => {
+    if (!selectedProduct) {
+      return;
+    }
+
+    getProducts()
+      .then((data) => {
+        const related = data.filter(
+          (product) =>
+            product.category === selectedProduct.category &&
+            product.id !== selectedProduct.id,
+        );
+
+        setRelatedProducts(related);
+      })
+      .catch((error) => {
+        console.error("Failed to looad related productss:", error);
+      });
+  }, [selectedProduct]);
+
+  if (!selectedProduct) {
+    return <div>Loading product...</div>;
+  }
 
   const {
     name,
@@ -39,8 +76,6 @@ const ProductDetails = () => {
     description,
   } = selectedProduct;
 
-  // const stockCount = 1;
-
   const ratingDistribution = [5, 4, 3, 2, 1].map((rating) => {
     const count = allReviews.filter(
       (review) => review.rating === rating,
@@ -55,10 +90,6 @@ const ProductDetails = () => {
     };
   });
 
-  const relatedProducts = products.filter(
-    (item) => item.category === category && item.id !== selectedProduct.id,
-  );
-
   const decreaseQuantity = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
@@ -70,9 +101,6 @@ const ProductDetails = () => {
       setQuantity(quantity + 1);
     }
   };
-
-  const { addToCart } = useCart();
-  const { wishlistItems, toggleWishlist } = useWishlist();
 
   const onWishlist = wishlistItems.some(
     (item) => item.id?.toString() === id?.toString(),
