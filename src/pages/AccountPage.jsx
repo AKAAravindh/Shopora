@@ -25,30 +25,154 @@ const AccountPage = () => {
       </main>
     );
   }
+
   if (!user) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <div className="w-full max-w-md rounded-3xl border border-gray-200 bg-white p-8 text-center shadow-sm">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-            <FiUser size={28} className="text-gray-500" />
-          </div>
-          <h1 className="mt-5 text-2xl font-bold text-gray-900">
-            Login to your account
-          </h1>
-          <p className="mt-2 text-sm leading-6 text-gray-500">
-            Sign in to manage your profile, orders, wishlist and shopping
-            activity.
-          </p>
-          <Link
-            to="/login"
-            className="mt-7 inline-flex items-center justify-center rounded-xl bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-700"
-          >
-            Login
-          </Link>
+      <main className="min-h-screen bg-gray-50">
+        <div className="mx-auto grid min-h-screen max-w-[1920px] lg:grid-cols-2">
+          {/* ================= IMAGE PANEL ================= */}
+          <section className="relative hidden overflow-hidden bg-gray-900 lg:block">
+            <img
+              src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1800&q=85"
+              alt="Shopora shopping collection"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/55" />
+            <div className="relative z-10 flex h-full flex-col justify-between p-10 xl:p-16">
+              <Link
+                to="/"
+                className="w-fit text-3xl font-black tracking-tight text-white"
+              >
+                SHOP<span className="text-gray-400">ORA</span>
+              </Link>
+              <div className="max-w-xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white/60">
+                  Your shopping space
+                </p>
+                <h1 className="mt-4 text-4xl font-bold leading-tight text-white xl:text-5xl">
+                  Everything you love, <br /> in one place.
+                </h1>
+                <p className="mt-5 max-w-md text-sm leading-7 text-white/70">
+                  Sign in to manage your account, save favourites and keep your
+                  shopping cart ready across visits.
+                </p>
+                <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
+                    <p className="text-sm font-semibold text-white">Wishlist</p>
+                    <p className="mt-1 text-xs leading-5 text-white/55">
+                      Save products you want to come back to.
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
+                    <p className="text-sm font-semibold text-white">
+                      Shopping cart
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-white/55">
+                      Keep your selected products ready for checkout.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-white/35">
+                © {new Date().getFullYear()} Shopora
+              </p>
+            </div>
+          </section>
+          {/* ================= GUEST PANEL ================= */}
+          <section className="flex items-center justify-center px-4 py-10 sm:px-8 lg:px-12">
+            <div className="w-full max-w-lg">
+              {/* Mobile Brand */}
+              <div className="mb-10 lg:hidden">
+                <Link
+                  to="/"
+                  className="text-2xl font-black tracking-tight text-gray-900"
+                >
+                  SHOP<span className="text-gray-400">ORA</span>
+                </Link>
+              </div>
+              <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+                {/* Mobile image */}
+                <div className="mb-7 overflow-hidden rounded-2xl lg:hidden">
+                  <img
+                    src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1000&q=80"
+                    alt="Shopora shopping collection"
+                    className="h-52 w-full object-cover"
+                  />
+                </div>
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100">
+                  <FiUser size={23} className="text-gray-700" />
+                </div>
+                <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
+                  My Account
+                </p>
+                <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                  Welcome to Shopora
+                </h1>
+                <p className="mt-3 max-w-md text-sm leading-6 text-gray-500">
+                  You're currently browsing as a guest. Choose an option below
+                  to continue.
+                </p>
+                {/* Main Actions */}
+                <div className="mt-8 space-y-3">
+                  <Link
+                    to="/login"
+                    className="flex h-13 w-full items-center justify-between rounded-xl bg-gray-900 px-5 text-sm font-semibold text-white transition hover:bg-gray-700"
+                  >
+                    <span>Login to your account</span>
+                    <FiArrowRight size={17} />
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="flex h-13 w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-5 text-sm font-semibold text-gray-900 transition hover:border-gray-300 hover:bg-gray-50"
+                  >
+                    <span>Create a new account</span>
+                    <FiArrowRight size={17} />
+                  </Link>
+                  <Link
+                    to="/"
+                    className="flex h-13 w-full items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
+                  >
+                    <span>Continue shopping as guest</span>
+                    <FiShoppingBag size={17} />
+                  </Link>
+                </div>
+                {/* Benefits */}
+                <div className="mt-8 border-t border-gray-100 pt-6">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+                    Why create an account?
+                  </p>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-xl bg-gray-50 p-3">
+                      <FiHeart size={16} className="text-gray-600" />
+                      <p className="mt-2 text-xs font-semibold text-gray-900">
+                        Save favourites
+                      </p>
+                    </div>
+                    <div className="rounded-xl bg-gray-50 p-3">
+                      <FiShoppingBag size={16} className="text-gray-600" />
+                      <p className="mt-2 text-xs font-semibold text-gray-900">
+                        Keep your cart
+                      </p>
+                    </div>
+                    <div className="rounded-xl bg-gray-50 p-3">
+                      <FiShield size={16} className="text-gray-600" />
+                      <p className="mt-2 text-xs font-semibold text-gray-900">
+                        Secure account
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <p className="mt-7 text-center text-xs text-gray-400">
+                  You can continue browsing without creating an account.
+                </p>
+              </div>
+            </div>
+          </section>
         </div>
       </main>
     );
   }
+
   const initials = user.name
     ?.split(" ")
     .map((word) => word.charAt(0))

@@ -3,9 +3,11 @@ import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import HeroSlides from "../components/HeroSlides";
 import { getProducts } from "../utils/api";
+import { useAuth } from "../hooks/useAuth";
 
 function HomePage() {
   const [products, setProducts] = useState([]);
+  const { user } = useAuth();
 
   useEffect(() => {
     getProducts()
@@ -247,6 +249,44 @@ function HomePage() {
             {newArrivalProducts.slice(0, 8).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* ================= ACCOUNT CTA ================= */}
+      {!user && (
+        <section className="px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+          <div className="mx-auto flex max-w-[1920px] flex-col items-center justify-between gap-5 rounded-3xl bg-gray-900 px-6 py-8 text-center sm:px-10 lg:flex-row lg:text-left">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
+                Join Shopora
+              </p>
+
+              <h2 className="mt-2 text-2xl font-bold text-white sm:text-3xl">
+                Make your shopping experience yours.
+              </h2>
+
+              <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
+                Create an account to keep your wishlist, cart and shopping
+                activity together.
+              </p>
+            </div>
+
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+              <Link
+                to="/register"
+                className="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-semibold text-gray-900 transition hover:bg-gray-100"
+              >
+                Create account
+              </Link>
+
+              <Link
+                to="/login"
+                className="inline-flex items-center justify-center rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                Sign in
+              </Link>
+            </div>
           </div>
         </section>
       )}
