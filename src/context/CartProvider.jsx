@@ -4,15 +4,43 @@ import {
   setCartItemsToStorage,
 } from "../utils/cartStorage";
 import { CartContext } from "./CartContext";
+import { getCart, savedCart } from "../utils/api";
+import { getCartId } from "../utils/cartId";
 
 export const CartProvider = ({ children }) => {
+  const [cartId] = useState(() => getCartId());
   const [cartItems, setCartItems] = useState(() => getCartItemsFromStorage());
+  const [cartLoaded, setCartLoaded] = useState(false);
   const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    getCart(cartId)
+      .then((cart) => {
+        if (cart.exists) {
+          setCartItems(cart.items ?? []);
+        }
+
+        setCartLoaded(true);
+      })
+      .catch((error) => {
+        console.error("Failed to load cart", error);
+      });
+  }, [cartId]);
 
   // Save cart whenever cartItems changes
   useEffect(() => {
     setCartItemsToStorage(cartItems);
   }, [cartItems]);
+
+  useEffect(() => {
+    if (!cartLoaded) {
+      return;
+    }
+
+    savedCart(cartId, cartItems).catch((error) => {
+      console.error("Failed to save cart:", error);
+    });
+  }, [cartId, cartItems, cartLoaded]);
 
   // Add to cart
   const addToCart = (product) => {

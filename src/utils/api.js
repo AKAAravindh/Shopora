@@ -37,3 +37,81 @@ export const addProducts = async (products) => {
 
   return response.json();
 };
+
+export const getCart = async (cartId) => {
+  const response = await fetch(`${API_URL}/api/cart/${cartId}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch cart");
+  }
+
+  return response.json();
+};
+
+export const savedCart = async (cartId, items) => {
+  const response = await fetch(`${API_URL}/api/cart/${cartId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ items }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to save cart");
+  }
+
+  return response.json();
+};
+
+export const registerUser = async (userData) => {
+  const response = await fetch(`${API_URL}/api/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to register");
+  }
+
+  return data;
+};
+
+export const loginUser = async (credentials) => {
+  const response = await fetch(`${API_URL}/api/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(credentials),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to login");
+  }
+
+  return data;
+};
+
+export const getCurrentUser = async (token) => {
+  const response = await fetch(`${API_URL}/api/auth/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to fetch current user");
+  }
+
+  return data;
+};
