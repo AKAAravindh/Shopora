@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import PageLoader from "./components/PageLoader";
 import ScrollToTop from "./components/ScrollToTop";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const AllProducts = lazy(() => import("./pages/AllProducts"));
@@ -28,8 +29,10 @@ function App() {
               path="/products/:categorySlug/:productSlug/:id"
               element={<ProductDetails />}
             />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="wishlist" element={<Wishlist />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/cart" element={<Cart />} />
+              <Route path="wishlist" element={<Wishlist />} />
+            </Route>
           </Route>
 
           <Route path="/login" element={<LoginPage />} />

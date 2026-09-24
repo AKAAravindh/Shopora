@@ -16,7 +16,6 @@ export const WishlistProvider = ({ children }) => {
     setWishlistItemsToStorage(wishlistItems);
   }, [wishlistItems]);
 
-  // Toggle wishlist
   const toggleWishlist = (product) => {
     setWishlistItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);

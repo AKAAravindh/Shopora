@@ -1,8 +1,8 @@
-import { FiHeart, FiShoppingBag, FiTrash2 } from "react-icons/fi";
-import { useOther } from "../hooks/useOther";
-import { useWishlist } from "../hooks/useWishlist";
+import { FiHeart } from "react-icons/fi";
 import ConfirmationModal from "../components/ConfirmationModal";
 import WishlistProductCard from "../components/WishlistProductCard";
+import { useOther } from "../hooks/useOther";
+import { useWishlist } from "../hooks/useWishlist";
 
 function WishlistPage() {
   const { wishlistItems, toggleWishlist } = useWishlist();

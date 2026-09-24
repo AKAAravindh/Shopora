@@ -1,48 +1,80 @@
 import { useEffect, useState } from "react";
-import {
-  getCartItemsFromStorage,
-  setCartItemsToStorage,
-} from "../utils/cartStorage";
+import { useAuth } from "../hooks/useAuth";
+import { getUserCart, saveUserCart } from "../utils/api";
+
 import { CartContext } from "./CartContext";
-import { getCart, savedCart } from "../utils/api";
-import { getCartId } from "../utils/cartId";
 
 export const CartProvider = ({ children }) => {
-  const [cartId] = useState(() => getCartId());
-  const [cartItems, setCartItems] = useState(() => getCartItemsFromStorage());
+  const { token } = useAuth();
+
+  const [cartItems, setCartItems] = useState([]);
   const [cartLoaded, setCartLoaded] = useState(false);
+  const [loadedToken, setLoadedToken] = useState(null);
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
-    getCart(cartId)
-      .then((cart) => {
-        if (cart.exists) {
-          setCartItems(cart.items ?? []);
+    let cancelled = false;
+
+    const loadCart = async () => {
+      setCartLoaded(false);
+      setLoadedToken(null);
+
+      if (!token) {
+        setCartItems([]);
+
+        if (!cancelled) {
+          setCartLoaded(true);
         }
 
+        return;
+      }
+
+      try {
+        const cart = await getUserCart(token);
+
+        if (cancelled) {
+          return;
+        }
+
+        setCartItems(cart.items ?? []);
+        setLoadedToken(token);
         setCartLoaded(true);
-      })
-      .catch((error) => {
-        console.error("Failed to load cart", error);
-      });
-  }, [cartId]);
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
 
-  // Save cart whenever cartItems changes
-  useEffect(() => {
-    setCartItemsToStorage(cartItems);
-  }, [cartItems]);
+        console.error("Failed to load user cart:", error);
+
+        setCartItems([]);
+        setLoadedToken(token);
+        setCartLoaded(true);
+      }
+    };
+
+    loadCart();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
 
   useEffect(() => {
-    if (!cartLoaded) {
+    if (!token || !cartLoaded || loadedToken !== token) {
       return;
     }
 
-    savedCart(cartId, cartItems).catch((error) => {
-      console.error("Failed to save cart:", error);
-    });
-  }, [cartId, cartItems, cartLoaded]);
+    const saveCurrentCart = async () => {
+      try {
+        await saveUserCart(token, cartItems);
+      } catch (error) {
+        console.error("Failed to save user cart:", error);
+      }
+    };
 
-  // Add to cart
+    saveCurrentCart();
+  }, [token, cartItems, cartLoaded, loadedToken]);
+
   const addToCart = (product) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
@@ -71,12 +103,10 @@ export const CartProvider = ({ children }) => {
     }, 2500);
   };
 
-  // Remove item
   const removeFromCart = (id) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
-  // Increase quantity
   const increaseQuantity = (id) => {
     setCartItems((prevItems) =>
       prevItems.map((item) =>
@@ -85,7 +115,6 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // Decrease quantity
   const decreaseQuantity = (id) => {
     setCartItems((prevItems) =>
       prevItems
@@ -96,7 +125,6 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // Clear cart
   const clearCart = () => {
     setCartItems([]);
   };
