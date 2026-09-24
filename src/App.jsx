@@ -33,11 +33,11 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="wishlist" element={<Wishlist />} />
             </Route>
+            <Route path="/account" element={<AccountPage />} />
           </Route>
 
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/account" element={<AccountPage />} />
         </Routes>
       </Suspense>
     </>

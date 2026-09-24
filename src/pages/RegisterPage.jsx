@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FiArrowRight,
   FiCheck,
@@ -11,12 +11,13 @@ import {
   FiShoppingBag,
   FiUser,
 } from "react-icons/fi";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { register, login } = useAuth();
+  const location = useLocation();
+  const { register, login, user, loading: authLoading } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -27,6 +28,12 @@ const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate("/account", { replace: true });
+    }
+  }, [authLoading, user, navigate]);
 
   const passwordIsValid = formData.password.length >= 6;
 
@@ -59,7 +66,12 @@ const RegisterPage = () => {
         password: formData.password,
       });
 
-      navigate("/");
+      const from = location.state?.from;
+
+      navigate(
+        from ? `${from.pathname}${from.search}${from.hash}` : "/account",
+        { replace: true },
+      );
     } catch (error) {
       setError(error.message || "Unable to create account");
     } finally {

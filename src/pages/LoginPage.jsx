@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FiArrowRight,
   FiEye,
@@ -9,12 +9,13 @@ import {
   FiShoppingBag,
   FiUser,
 } from "react-icons/fi";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const location = useLocation();
+  const { login, user, loading: authLoading } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -24,6 +25,12 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate("/account", { replace: true });
+    }
+  }, [authLoading, user, navigate]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -42,7 +49,13 @@ const LoginPage = () => {
 
     try {
       await login(formData);
-      navigate("/");
+
+      const from = location.state?.from;
+
+      navigate(
+        from ? `${from.pathname}${from.search}${from.hash}` : "/account",
+        { replace: true },
+      );
     } catch (error) {
       setError(error.message || "Unable to sign in");
     } finally {
@@ -251,6 +264,7 @@ const LoginPage = () => {
                 Don't have an account?{" "}
                 <Link
                   to="/register"
+                  state={location.state}
                   className="font-semibold text-gray-900 hover:underline"
                 >
                   Create one
