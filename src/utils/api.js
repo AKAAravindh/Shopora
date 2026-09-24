@@ -53,7 +53,7 @@ export const getUserCart = async (token) => {
 };
 
 export const saveUserCart = async (token, items) => {
-  const response = fetch(`${API_URL}/api/cart`, {
+  const response = await fetch(`${API_URL}/api/cart`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -66,6 +66,41 @@ export const saveUserCart = async (token, items) => {
 
   if (!response.ok) {
     throw new Error(data.message || "Failed to save user cart");
+  }
+
+  return data;
+};
+
+export const getUserWishlist = async (token) => {
+  const response = await fetch(`${API_URL}/api/wishlist`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to fetch user wishlist");
+  }
+
+  return data;
+};
+
+export const saveUserWishlist = async (token, items) => {
+  const response = await fetch(`${API_URL}/api/wishlist`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ items }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to save user wishlist");
   }
 
   return data;

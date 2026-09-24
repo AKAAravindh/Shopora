@@ -1,6 +1,6 @@
 const U = "auto=format&fit=crop&w=900&q=80";
 
-const products = [
+const productsss = [
   // ============================================================
   // SHOES 1 - 10
   // ============================================================
@@ -3040,4 +3040,4 @@ const products = [
   },
 ];
 
-export default products;
+export default productsss;
