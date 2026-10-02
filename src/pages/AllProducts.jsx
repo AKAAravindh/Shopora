@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 
 import LazyLoadCard from "../components/LazyLoadCard";
 import ProductFilters from "../components/ProductFilters";
@@ -8,6 +8,10 @@ import { getProducts } from "../utils/api";
 
 function AllProducts() {
   const { categorySlug } = useParams();
+
+  const [searchParams] = useSearchParams();
+
+  const searchQuery = searchParams.get("search")?.trim().toLowerCase() || "";
 
   const [products, setProducts] = useState([]);
 
@@ -63,6 +67,23 @@ function AllProducts() {
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
+
+    if (searchQuery) {
+      result = result.filter((product) => {
+        const searchableText = [
+          product.name,
+          product.brand,
+          product.category,
+          product.subCategory,
+          ...(product.tags || []),
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        return searchableText.includes(searchQuery);
+      });
+    }
 
     /*
       =========================
@@ -220,7 +241,7 @@ function AllProducts() {
     }
 
     return result;
-  }, [products, categorySlug, appliedFilters]);
+  }, [products, categorySlug, appliedFilters, searchQuery]);
 
   /*
     =========================
@@ -316,6 +337,18 @@ function AllProducts() {
     setAppliedFilters(emptyFilters);
   };
 
+  const handleCloseMobileFilters = () => {
+    setSelectedCategories([...appliedFilters.selectedCategories]);
+    setPriceRange({ ...appliedFilters.priceRange });
+    setSelectedBrands([...appliedFilters.selectedBrands]);
+    setSelectedRatings([...appliedFilters.selectedRatings]);
+    setSelectedDiscounts([...appliedFilters.selectedDiscounts]);
+    setInStockOnly(appliedFilters.inStockOnly);
+    setSelectedProductTypes([...appliedFilters.selectedProductTypes]);
+
+    setMobileFiltersOpen(false);
+  };
+
   const handleSortChange = (e) => {
     setManualFilterValue(e.target.value);
   };
@@ -324,7 +357,7 @@ function AllProducts() {
     <main className="w-full max-w-[1920px] bg-gray-50">
       {/* ================= PAGE HEADER ================= */}
 
-      <section className="border-b border-gray-200 bg-white">
+      {/* <section className="hidden border-b border-gray-200 bg-white lg:block">
         <div className="mx-auto w-full max-w-[1920px] px-4 py-0 sm:px-6 md:py-8 lg:px-8">
           <div className="flex items-end justify-between gap-4">
             <div>
@@ -347,7 +380,7 @@ function AllProducts() {
             </p>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ================= PRODUCTS AREA ================= */}
 
@@ -470,7 +503,7 @@ function AllProducts() {
           <button
             type="button"
             aria-label="Close filters"
-            onClick={() => setMobileFiltersOpen(false)}
+            onClick={handleCloseMobileFilters}
             className="absolute inset-0 h-full w-full cursor-default bg-black/40"
           />
 
@@ -490,7 +523,7 @@ function AllProducts() {
 
               <button
                 type="button"
-                onClick={() => setMobileFiltersOpen(false)}
+                onClick={handleCloseMobileFilters}
                 className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"
                 aria-label="Close filters"
               >

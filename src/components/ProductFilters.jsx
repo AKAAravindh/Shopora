@@ -24,12 +24,6 @@ const ProductFilters = ({
 }) => {
   const [showAllBrands, setShowAllBrands] = useState(false);
 
-  /*
-    =========================
-    CATEGORIES
-    =========================
-  */
-
   const productCategories = useMemo(() => {
     const categoryMap = new Map();
 
@@ -49,12 +43,6 @@ const ProductFilters = ({
       count,
     })).sort((a, b) => a.name.localeCompare(b.name));
   }, [products]);
-
-  /*
-    =========================
-    BRANDS
-    =========================
-  */
 
   const productBrands = useMemo(() => {
     const brandMap = new Map();
@@ -77,12 +65,6 @@ const ProductFilters = ({
     ? productBrands
     : productBrands.slice(0, 5);
 
-  /*
-    =========================
-    RATING OPTIONS
-    =========================
-  */
-
   const ratingOptions = useMemo(() => {
     return [5, 4, 3, 2, 1]
       .map((rating) => ({
@@ -92,12 +74,6 @@ const ProductFilters = ({
       }))
       .filter((option) => option.count > 0);
   }, [products]);
-
-  /*
-    =========================
-    DISCOUNT OPTIONS
-    =========================
-  */
 
   const discountOptions = useMemo(() => {
     return [50, 30, 20, 10]
@@ -111,23 +87,11 @@ const ProductFilters = ({
       .filter((option) => option.count > 0);
   }, [products]);
 
-  /*
-    =========================
-    AVAILABILITY
-    =========================
-  */
-
   const inStockCount = useMemo(() => {
     return products.filter(
       (product) => product.stock === true || Number(product.stockCount) > 0,
     ).length;
   }, [products]);
-
-  /*
-    =========================
-    PRODUCT TYPE
-    =========================
-  */
 
   const productTypeOptions = useMemo(() => {
     const types = [
@@ -152,12 +116,6 @@ const ProductFilters = ({
       }))
       .filter((type) => type.count > 0);
   }, [products]);
-
-  /*
-    =========================
-    PRICE LIMITS
-    =========================
-  */
 
   const priceLimits = useMemo(() => {
     const prices = products
@@ -627,7 +585,7 @@ const ProductFilters = ({
           <button
             type="button"
             onClick={onClearAll}
-            className="flex-1 rounded-lg border border-gray-200 py-2.5 text-xs font-semibold text-gray-600 transition hover:border-gray-300 hover:text-gray-900"
+            className="flex-1 rounded-lg border border-gray-200 py-2.5 text-xs font-semibold text-gray-600 transition hover:border-gray-300 hover:text-gray-900 cursor-pointer"
           >
             Clear
           </button>
@@ -635,7 +593,7 @@ const ProductFilters = ({
           <button
             type="button"
             onClick={onApplyFilters}
-            className="flex-[1.5] rounded-lg bg-gray-900 py-2.5 text-xs font-semibold text-white transition hover:bg-gray-700 active:scale-[0.98]"
+            className="flex-[1.5] rounded-lg bg-gray-900 py-2.5 text-xs font-semibold text-white transition hover:bg-gray-700 active:scale-[0.98] cursor-pointer"
           >
             Apply Filters
           </button>

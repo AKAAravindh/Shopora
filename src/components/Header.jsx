@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   FiMenu,
   FiX,
@@ -16,12 +16,50 @@ import { useAuth } from "../hooks/useAuth";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(true);
   const [products, setProducts] = useState([]);
 
   const { user } = useAuth();
   const { cartItems } = useCart();
   const { wishlistItems } = useWishlist();
+
+  const navigate = useNavigate();
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const searchResults = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+
+    if (!query) return [];
+
+    return products
+      .filter((product) => {
+        const searchableText = [
+          product.name,
+          product.brand,
+          product.category,
+          product.subcategory,
+          ...(product.tags || []),
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        return searchableText.includes(query);
+      })
+      .slice(0, 5); // Limit to 5 results
+  }, [products, searchQuery]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+
+    const query = searchQuery.trim();
+
+    if (!query) return;
+
+    navigate(`/products?search=${encodeURIComponent(query)}`);
+    setSearchOpen(false);
+  };
 
   useEffect(() => {
     getProducts()
@@ -63,9 +101,9 @@ const Header = () => {
   const navItems = [...categoryLinks, ...additionalLinks];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-200 bg-gray-900 text-gray-200">
+    <header className="sticky top-0 z-50 border-b border-gray-200 bg-gray-950 text-gray-200">
       {/* ================= DESKTOP HEADER ================= */}
-      <div className="mx-4 sm:mx-10 lg:mx-0 max-w-[1920px] px-4 sm:px-6 lg:px-16">
+      <div className="sm:mx-10 lg:mx-0 max-w-[1920px] px-4 sm:px-4 lg:px-16">
         <div className="flex py-3 md:py-0 md:h-20 items-center justify-between gap-6">
           {/* Logo */}
           <Link
@@ -78,7 +116,7 @@ const Header = () => {
 
           {/* Search */}
           <div className="hidden max-w-xl flex-1 md:block">
-            <form className="relative">
+            <form className="relative" onSubmit={handleSearchSubmit}>
               <FiSearch
                 size={18}
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
@@ -87,8 +125,78 @@ const Header = () => {
               <input
                 type="search"
                 placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50 pl-11 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:bg-white cursor-text"
               />
+
+              {searchQuery.trim() && (
+                <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+                  {searchResults.length > 0 ? (
+                    <>
+                      <div className="max-h-80 overflow-y-auto">
+                        {searchResults.map((product) => (
+                          <button
+                            key={product.id}
+                            type="button"
+                            onClick={() => {
+                              const categorySlug = product.category
+                                ?.toLowerCase()
+                                .replace(/\s+/g, "-");
+
+                              const nameSlug = product.name
+                                ?.toLowerCase()
+                                .replace(/[^a-z0-9]+/g, "-")
+                                .replace(/(^-|-$)/g, "");
+
+                              navigate(
+                                `/products/${categorySlug}/${nameSlug}/${product.id}`,
+                              );
+                              setSearchQuery("");
+                            }}
+                            className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-gray-50"
+                          >
+                            <img
+                              src={product.images?.[0]}
+                              alt={product.name}
+                              className="h-12 w-12 shrink-0 rounded-lg object-cover"
+                            />
+
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-medium text-gray-900">
+                                {product.name}
+                              </p>
+
+                              <p className="mt-0.5 text-xs text-gray-500">
+                                {product.brand}
+                              </p>
+
+                              <p className="mt-0.5 text-xs font-semibold text-gray-900">
+                                ₹{Number(product.price).toLocaleString("en-IN")}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          handleSearchSubmit(e);
+                          setSearchQuery("");
+                        }}
+                        className="w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                      >
+                        View all results
+                      </button>
+                    </>
+                  ) : (
+                    <div className="px-4 py-5 text-center text-sm text-gray-500">
+                      No products found
+                    </div>
+                  )}
+                </div>
+              )}
             </form>
           </div>
 
@@ -99,7 +207,7 @@ const Header = () => {
                 {/* Wishlist */}
                 <Link
                   to="/wishlist"
-                  className="group relative flex h-11 w-11 items-center justify-center rounded-full text-orange-500 transition hover:bg-gray-100"
+                  className="group relative flex h-11 w-11 items-center justify-center rounded-full text-orange-500 transition hover:bg-gray-900"
                   aria-label="Wishlist"
                 >
                   <FiHeart size={24} />
@@ -114,7 +222,7 @@ const Header = () => {
                 {/* Account */}
                 <Link
                   to="/account"
-                  className="flex h-11 w-11 items-center justify-center rounded-full text-orange-500 transition hover:bg-gray-100"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-orange-500 transition hover:bg-gray-900"
                   aria-label="Account"
                 >
                   <FiUser size={24} />
@@ -123,7 +231,7 @@ const Header = () => {
                 {/* Cart */}
                 <Link
                   to="/cart"
-                  className="relative flex h-11 w-11 items-center justify-center rounded-full text-orange-500 transition hover:bg-gray-100"
+                  className="relative flex h-11 w-11 items-center justify-center rounded-full text-orange-500 transition hover:bg-gray-900"
                   aria-label="Cart"
                 >
                   <FiShoppingBag size={24} />
@@ -195,7 +303,7 @@ const Header = () => {
         {/* Mobile Search */}
         {searchOpen && (
           <div className="pb-4 md:hidden">
-            <form className="relative">
+            <form className="relative" onSubmit={handleSearchSubmit}>
               <FiSearch
                 size={18}
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
@@ -205,8 +313,80 @@ const Header = () => {
                 autoFocus
                 type="search"
                 placeholder="Search products..."
-                className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50 pl-11 pr-4 text-sm outline-none focus:border-gray-400 focus:bg-white"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="text-gray-900 h-11 w-full rounded-xl border border-gray-200 bg-gray-50 pl-11 pr-4 text-sm outline-none focus:border-gray-400 focus:bg-white"
               />
+
+              {searchQuery.trim() && (
+                <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+                  {searchResults.length > 0 ? (
+                    <>
+                      <div className="max-h-80 overflow-y-auto">
+                        {searchResults.map((product) => (
+                          <button
+                            key={product.id}
+                            type="button"
+                            onClick={() => {
+                              const categorySlug = product.category
+                                ?.toLowerCase()
+                                .replace(/\s+/g, "-");
+
+                              const nameSlug = product.name
+                                ?.toLowerCase()
+                                .replace(/[^a-z0-9]+/g, "-")
+                                .replace(/(^-|-$)/g, "");
+
+                              navigate(
+                                `/products/${categorySlug}/${nameSlug}/${product.id}`,
+                              );
+
+                              setSearchQuery("");
+                              setSearchOpen(false);
+                            }}
+                            className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-gray-50"
+                          >
+                            <img
+                              src={product.images?.[0]}
+                              alt={product.name}
+                              className="h-12 w-12 shrink-0 rounded-lg object-cover"
+                            />
+
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-medium text-gray-900">
+                                {product.name}
+                              </p>
+
+                              <p className="mt-0.5 text-xs text-gray-500">
+                                {product.brand}
+                              </p>
+
+                              <p className="mt-0.5 text-xs font-semibold text-gray-900">
+                                ₹{Number(product.price).toLocaleString("en-IN")}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                        onClick={() => {
+                          setSearchOpen(false);
+                          setSearchQuery("");
+                        }}
+                      >
+                        View all results
+                      </button>
+                    </>
+                  ) : (
+                    <div className="px-4 py-5 text-center text-sm text-gray-500">
+                      No products found
+                    </div>
+                  )}
+                </div>
+              )}
             </form>
           </div>
         )}

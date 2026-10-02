@@ -9,10 +9,12 @@ const AllProducts = lazy(() => import("./pages/AllProducts"));
 const ProductDetails = lazy(() => import("./components/ProductDetails"));
 const Cart = lazy(() => import("./pages/CartPage"));
 const Wishlist = lazy(() => import("./pages/WishlistPage"));
-const LoginPage = lazy(() => import("./pages/LoginPage"));
-const RegisterPage = lazy(() => import("./pages/RegisterPage"));
+// const LoginPage = lazy(() => import("./pages/LoginPage"));
+// const RegisterPage = lazy(() => import("./pages/RegisterPage"));
 const AccountPage = lazy(() => import("./pages/AccountPage"));
 const MainLayout = lazy(() => import("./layout/MainLayout"));
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const RegisterPage = lazy(() => import("./pages/RegisterPage"));
 
 function App() {
   return (

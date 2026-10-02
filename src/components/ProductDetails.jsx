@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { FiHeart } from "react-icons/fi";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import { useWishlist } from "../hooks/useWishlist";
 import { getProductByID, getProducts } from "../utils/api";
@@ -138,7 +138,7 @@ const ProductDetails = () => {
   return (
     <div className="min-h-screen bg-gray-50 mx-auto max-w-[1920px]">
       {/* Breadcrumb */}
-      <div className="mx-auto lg:mx-0 max-w-[1920px] px-4 lg:px-8 pt-6">
+      {/* <div className="mx-auto lg:mx-0 max-w-[1920px] px-4 lg:px-8 pt-6">
         <div className="flex items-center gap-2 text-xs text-gray-400">
           <Link to="/" className="cursor-pointer hover:text-gray-900">
             Home
@@ -157,13 +157,13 @@ const ProductDetails = () => {
           <span>/</span>
           <span className="font-medium text-gray-700">{name}</span>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Product */}
       <main className="mx-auto lg:mx-0 max-w-[1920px] lg:px-8 px-4 py-8">
-        <div className="grid grid-cols-1 lg:gap-4 xl:gap-6 lg:grid-cols-[500px_1fr] xl:grid-cols-[700px_1fr]">
+        <div className="grid grid-cols-1 lg:gap-4 xl:gap-6 lg:grid-cols-[500px_1fr] xl:grid-cols-[700px_1fr] relative">
           {/* ================= IMAGE SECTION ================= */}
-          <div className="flex flex-col-reverse xl:flex-row gap-2">
+          <div className="flex flex-col-reverse xl:flex-row gap-2 lg:sticky top-40 self-start">
             {/* Thumbnails */}
             <div className="flex xl:flex-col flex-row gap-2 min-w-max overflow-x-auto scrollbar-hide p-1 mb-auto">
               {images.map((image, index) => (
