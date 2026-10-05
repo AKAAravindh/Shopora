@@ -6,6 +6,7 @@ import { useWishlist } from "../hooks/useWishlist";
 const ProductCard = ({ product }) => {
   const {
     id,
+    productId,
     name,
     brand,
     price,
@@ -41,7 +42,7 @@ const ProductCard = ({ product }) => {
       {/* ================= IMAGE ================= */}
       <div className="relative aspect-square overflow-hidden rounded-2xl bg-gray-100">
         <Link
-          to={`/products/${categorySlug}/${productSlug}/${id}`}
+          to={`/p/${categorySlug}/${productSlug}/${productId}`}
           className="block h-full w-full"
         >
           <img
@@ -106,7 +107,7 @@ const ProductCard = ({ product }) => {
 
         {/* Product name */}
         <Link
-          to={`/products/${categorySlug}/${productSlug}/${id}`}
+          to={`/p/${categorySlug}/${productSlug}/${productId}`}
           className="mt-1 block"
         >
           <h2 className="truncate text-sm font-semibold text-gray-900 transition hover:text-gray-500">

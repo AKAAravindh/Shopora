@@ -9,12 +9,13 @@ const AllProducts = lazy(() => import("./pages/AllProducts"));
 const ProductDetails = lazy(() => import("./components/ProductDetails"));
 const Cart = lazy(() => import("./pages/CartPage"));
 const Wishlist = lazy(() => import("./pages/WishlistPage"));
-// const LoginPage = lazy(() => import("./pages/LoginPage"));
-// const RegisterPage = lazy(() => import("./pages/RegisterPage"));
 const AccountPage = lazy(() => import("./pages/AccountPage"));
 const MainLayout = lazy(() => import("./layout/MainLayout"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const RegisterPage = lazy(() => import("./pages/RegisterPage"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const OrdersPage = lazy(() => import("./pages/OrdersPage"));
+const OrderDetailsPage = lazy(() => import("./pages/OrderDetailsPage"));
 
 function App() {
   return (
@@ -31,9 +32,16 @@ function App() {
               path="/products/:categorySlug/:productSlug/:id"
               element={<ProductDetails />}
             />
+            <Route
+              path="/p/:categorySlug/:productSlug/:productId"
+              element={<ProductDetails />}
+            />
             <Route element={<ProtectedRoute />}>
               <Route path="/cart" element={<Cart />} />
-              <Route path="wishlist" element={<Wishlist />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/orders" element={<OrdersPage />} />
+              <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
             </Route>
             <Route path="/account" element={<AccountPage />} />
           </Route>

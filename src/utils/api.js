@@ -106,6 +106,57 @@ export const saveUserWishlist = async (token, items) => {
   return data;
 };
 
+export const createOrder = async (token, orderData) => {
+  const response = await fetch(`${API_URL}/api/orders`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(orderData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to create order");
+  }
+
+  return data;
+};
+
+export const getUserOrders = async (token) => {
+  const response = await fetch(`${API_URL}/api/orders`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to fetch user orders");
+  }
+
+  return data;
+};
+
+export const getOrderById = async (token, orderId) => {
+  const response = await fetch(`${API_URL}/api/orders/${orderId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to fetch order");
+  }
+
+  return data;
+};
+
 export const registerUser = async (userData) => {
   const response = await fetch(`${API_URL}/api/auth/register`, {
     method: "POST",
@@ -156,4 +207,14 @@ export const getCurrentUser = async (token) => {
   }
 
   return data;
+};
+
+export const getCategories = async () => {
+  const response = await fetch(`${API_URL}/api/categories`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch categories");
+  }
+
+  return response.json();
 };

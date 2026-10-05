@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   FiArrowUpRight,
   FiFacebook,
@@ -12,8 +13,26 @@ import {
   FiTwitter,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { getCategories } from "../utils/api";
 
 const Footer = () => {
+  const [categories, setCategories] = useState([]);
+
+  const footerCategories = ["Shoes", "Clothing", "Bags", "Watches"];
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Failed to load categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   return (
     <footer className="bg-gray-950 text-gray-300">
       {/* ================= TRUST BAR ================= */}
@@ -185,40 +204,31 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* INFORMATION */}
+          {/* CATEGORIES */}
           <div className="sm:order-3">
             <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-white">
-              Information
+              Categories
             </h3>
 
             <div className="mt-5 space-y-3">
-              <Link
-                to="/products"
-                className="block text-sm text-gray-500 transition hover:text-white"
-              >
-                Browse Collection
-              </Link>
+              {categories
+                .filter((category) => footerCategories.includes(category))
+                .map((category) => {
+                  const categorySlug = category
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "-")
+                    .replace(/(^-|-$)/g, "");
 
-              <Link
-                to="/products/shoes"
-                className="block text-sm text-gray-500 transition hover:text-white"
-              >
-                Shoes
-              </Link>
-
-              <Link
-                to="/products/clothing"
-                className="block text-sm text-gray-500 transition hover:text-white"
-              >
-                Clothing
-              </Link>
-
-              <Link
-                to="/products/electronics"
-                className="block text-sm text-gray-500 transition hover:text-white"
-              >
-                Electronics
-              </Link>
+                  return (
+                    <Link
+                      key={category}
+                      to={`/products/${categorySlug}`}
+                      className="block text-sm text-gray-500 transition hover:text-white"
+                    >
+                      {category}
+                    </Link>
+                  );
+                })}
             </div>
           </div>
 

@@ -15,20 +15,20 @@ const ProductDetails = () => {
   const { addToCart } = useCart();
   const { wishlistItems, toggleWishlist } = useWishlist();
 
-  const { id } = useParams();
+  const { productId } = useParams();
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
 
   useEffect(() => {
-    getProductByID(id)
+    getProductByID(productId)
       .then((product) => {
         setSelectedProduct(product);
       })
       .catch((error) => {
         console.error("Failed to load product:", error);
       });
-  }, [id]);
+  }, [productId]);
 
   useEffect(() => {
     if (!selectedProduct) {
@@ -103,7 +103,7 @@ const ProductDetails = () => {
   };
 
   const onWishlist = wishlistItems.some(
-    (item) => item.id?.toString() === id?.toString(),
+    (item) => item.productId === selectedProduct?.productId,
   );
 
   // Color classes for the color swatches - TEMP
@@ -556,7 +556,7 @@ const ProductDetails = () => {
                 <div className="flex justify-between px-4 py-3 text-xs">
                   <span className="text-gray-400">Product ID</span>
                   <span className="font-medium text-gray-900">
-                    #{id.toString().padStart(5, "0")}
+                    {selectedProduct.productId}
                   </span>
                 </div>
               </div>

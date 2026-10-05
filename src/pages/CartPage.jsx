@@ -290,9 +290,14 @@ const Cart = () => {
               </div>
 
               {/* Checkout */}
-              <button className="mt-6 w-full rounded-xl bg-gray-900 py-3.5 text-sm font-semibold text-white transition hover:bg-black">
-                Proceed to Checkout
-              </button>
+              {cartItems.length > 0 && (
+                <Link
+                  to="/checkout"
+                  className="mt-6 flex w-full items-center justify-center rounded-xl bg-gray-900 py-3.5 text-sm font-semibold text-white transition hover:bg-black cursor-pointer"
+                >
+                  Proceed to Checkout
+                </Link>
+              )}
 
               <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-400">
                 <span>🔒</span>

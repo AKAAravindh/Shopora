@@ -31,13 +31,13 @@ const ProductGridCard = ({ product }) => {
   return (
     <div className="group md:min-w-50 overflow-hidden rounded-md md:rounded-xl md:border border-gray-200 bg-white md:shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg select-none relative isolate">
       {/* Clickable Product Area */}
-      <Link to={`/products/${categorySlug}/${nameSlug}/${id}`}>
+      <Link to={`/p/${categorySlug}/${nameSlug}/${product.productId}`}>
         {/* Image */}
         <div className="relative h-40 md:h-55 overflow-hidden bg-gray-100">
           <img
             src={image}
             alt={name}
-            className="h-full mx-auto transition duration-500 group-hover:scale-105"
+            className="h-full object-cover mx-auto transition duration-500 group-hover:scale-105"
           />
 
           {/* Product Badge */}

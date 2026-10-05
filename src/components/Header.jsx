@@ -8,24 +8,97 @@ import {
   FiUser,
   FiShoppingBag,
   FiChevronDown,
+  FiChevronRight,
 } from "react-icons/fi";
+
 import { useCart } from "../hooks/useCart";
 import { useWishlist } from "../hooks/useWishlist";
-import { getProducts } from "../utils/api";
 import { useAuth } from "../hooks/useAuth";
+import { getProducts, getCategories } from "../utils/api";
 
-const Header = () => {
+function Header() {
+  const navigate = useNavigate();
+
+  const { cartItems } = useCart();
+  const { wishlistItems } = useWishlist();
+  const { user } = useAuth();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(true);
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
 
-  const { user } = useAuth();
-  const { cartItems } = useCart();
-  const { wishlistItems } = useWishlist();
-
-  const navigate = useNavigate();
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  const primaryCategories = ["Shoes", "Clothing", "Bags", "Watches"];
+
+  // --------------------------------------------------------------------------
+  // Fetch products
+  // --------------------------------------------------------------------------
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const data = await getProducts();
+        setProducts(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Failed to load products:", error);
+      }
+    };
+
+    loadProducts();
+  }, []);
+
+  // --------------------------------------------------------------------------
+  // Fetch categories
+  // --------------------------------------------------------------------------
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Failed to load categories:", error);
+      }
+    };
+
+    loadCategories();
+  }, []);
+
+  // --------------------------------------------------------------------------
+  // Lock background scroll when mobile menu is open
+  // --------------------------------------------------------------------------
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [mobileMenuOpen]);
+
+  // --------------------------------------------------------------------------
+  // Counts
+  // --------------------------------------------------------------------------
+
+  const cartCount = cartItems.reduce(
+    (total, item) => total + Number(item.quantity || 0),
+    0,
+  );
+
+  const wishlistCount = wishlistItems.length;
+
+  // --------------------------------------------------------------------------
+  // Search
+  // --------------------------------------------------------------------------
 
   const searchResults = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -47,45 +120,53 @@ const Header = () => {
 
         return searchableText.includes(query);
       })
-      .slice(0, 5); // Limit to 5 results
+      .slice(0, 5);
   }, [products, searchQuery]);
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
 
     const query = searchQuery.trim();
 
     if (!query) return;
 
     navigate(`/products?search=${encodeURIComponent(query)}`);
+
+    setSearchQuery("");
     setSearchOpen(false);
+    setMobileMenuOpen(false);
   };
 
-  useEffect(() => {
-    getProducts()
-      .then((data) => {
-        setProducts(Array.isArray(data) ? data : []);
-      })
-      .catch((error) => {
-        console.error("Failed to load products", error);
-      });
-  }, []);
+  const handleSearchResultClick = () => {
+    setSearchQuery("");
+    setSearchOpen(false);
+    setMobileMenuOpen(false);
+  };
 
-  // Total number of products in cart
-  const cartItemCount = cartItems.reduce(
-    (total, item) => total + item.quantity,
-    0,
-  );
+  // --------------------------------------------------------------------------
+  // Category links
+  // --------------------------------------------------------------------------
 
-  const categories = products.reduce((acc, product) => {
-    if (product.category && !acc.includes(product.category)) {
-      acc.push(product.category);
-    }
-    return acc;
-  }, []);
+  const categoryLinks = categories
+    .filter((category) => primaryCategories.includes(category))
+    .map((category) => {
+      const categorySlug = category
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
 
-  const categoryLinks = categories.map((category) => {
-    const categorySlug = category.toLowerCase().replace(/\s+/g, "-");
+      return {
+        name: category,
+        path: `/products/${categorySlug}`,
+      };
+    });
+
+  const allCategoryLinks = categories.map((category) => {
+    const categorySlug = category
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
     return {
       name: category,
       path: `/products/${categorySlug}`,
@@ -93,406 +174,613 @@ const Header = () => {
   });
 
   const additionalLinks = [
-    { name: "New Arrivals", path: "/products/new-arrivals" },
-    { name: "Best Sellers", path: "/products/best-selling" },
-    { name: "Sale", path: "/products/sale" },
+    {
+      name: "New Arrivals",
+      path: "/products/new-arrivals",
+    },
+    {
+      name: "Best Sellers",
+      path: "/products/best-selling",
+    },
+    {
+      name: "Sale",
+      path: "/products/sale",
+    },
   ];
 
   const navItems = [...categoryLinks, ...additionalLinks];
 
+  // --------------------------------------------------------------------------
+  // Product URL
+  // --------------------------------------------------------------------------
+
+  const getProductPath = (product) => {
+    const categorySlug = product.category
+      ?.toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
+    const productSlug = product.name
+      ?.toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
+    return `/p/${categorySlug}/${productSlug}/${product.productId}`;
+  };
+
+  // --------------------------------------------------------------------------
+  // Close mobile menu
+  // --------------------------------------------------------------------------
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+    setMobileCategoriesOpen(false);
+    setSearchOpen(false);
+  };
+
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-200 bg-gray-950 text-gray-200">
-      {/* ================= DESKTOP HEADER ================= */}
-      <div className="sm:mx-10 lg:mx-0 max-w-[1920px] px-4 sm:px-4 lg:px-16">
-        <div className="flex py-3 md:py-0 md:h-20 items-center justify-between gap-6">
-          {/* Logo */}
-          <Link
-            onClick={() => setMobileMenuOpen(false)}
-            to="/"
-            className="shrink-0 text-2xl md:text-4xl font-black tracking-tight text-orange-500"
-          >
-            SHOP<span className="text-gray-200">ORA</span>
-          </Link>
+    <header className="sticky top-0 z-50 bg-gray-950 text-white shadow-lg">
+      {/* ================================================================== */}
+      {/* Desktop */}
+      {/* ================================================================== */}
 
-          {/* Search */}
-          <div className="hidden max-w-xl flex-1 md:block">
-            <form className="relative" onSubmit={handleSearchSubmit}>
-              <FiSearch
-                size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-              />
+      <div className="hidden md:block">
+        {/* ---------------------------------------------------------------- */}
+        {/* Main Header */}
+        {/* ---------------------------------------------------------------- */}
 
-              <input
-                type="search"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50 pl-11 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:bg-white cursor-text"
-              />
+        <div className="border-b border-gray-800">
+          <div className="mx-auto flex h-18 max-w-7xl items-center gap-6 px-6">
+            {/* Logo */}
 
-              {searchQuery.trim() && (
-                <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
-                  {searchResults.length > 0 ? (
-                    <>
-                      <div className="max-h-80 overflow-y-auto">
-                        {searchResults.map((product) => (
-                          <button
-                            key={product.id}
-                            type="button"
-                            onClick={() => {
-                              const categorySlug = product.category
-                                ?.toLowerCase()
-                                .replace(/\s+/g, "-");
-
-                              const nameSlug = product.name
-                                ?.toLowerCase()
-                                .replace(/[^a-z0-9]+/g, "-")
-                                .replace(/(^-|-$)/g, "");
-
-                              navigate(
-                                `/products/${categorySlug}/${nameSlug}/${product.id}`,
-                              );
-                              setSearchQuery("");
-                            }}
-                            className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-gray-50"
-                          >
-                            <img
-                              src={product.images?.[0]}
-                              alt={product.name}
-                              className="h-12 w-12 shrink-0 rounded-lg object-cover"
-                            />
-
-                            <div className="min-w-0 flex-1">
-                              <p className="truncate text-sm font-medium text-gray-900">
-                                {product.name}
-                              </p>
-
-                              <p className="mt-0.5 text-xs text-gray-500">
-                                {product.brand}
-                              </p>
-
-                              <p className="mt-0.5 text-xs font-semibold text-gray-900">
-                                ₹{Number(product.price).toLocaleString("en-IN")}
-                              </p>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          handleSearchSubmit(e);
-                          setSearchQuery("");
-                        }}
-                        className="w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
-                      >
-                        View all results
-                      </button>
-                    </>
-                  ) : (
-                    <div className="px-4 py-5 text-center text-sm text-gray-500">
-                      No products found
-                    </div>
-                  )}
-                </div>
-              )}
-            </form>
-          </div>
-
-          {/* Desktop Actions */}
-          <div className="hidden items-center gap-1 md:gap-3 md:flex">
-            {user ? (
-              <>
-                {/* Wishlist */}
-                <Link
-                  to="/wishlist"
-                  className="group relative flex h-11 w-11 items-center justify-center rounded-full text-orange-500 transition hover:bg-gray-900"
-                  aria-label="Wishlist"
-                >
-                  <FiHeart size={24} />
-
-                  {wishlistItems.length > 0 && (
-                    <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-orange-500 px-1 text-[9px] font-bold text-white">
-                      {wishlistItems.length}
-                    </span>
-                  )}
-                </Link>
-
-                {/* Account */}
-                <Link
-                  to="/account"
-                  className="flex h-11 w-11 items-center justify-center rounded-full text-orange-500 transition hover:bg-gray-900"
-                  aria-label="Account"
-                >
-                  <FiUser size={24} />
-                </Link>
-
-                {/* Cart */}
-                <Link
-                  to="/cart"
-                  className="relative flex h-11 w-11 items-center justify-center rounded-full text-orange-500 transition hover:bg-gray-900"
-                  aria-label="Cart"
-                >
-                  <FiShoppingBag size={24} />
-
-                  {cartItemCount > 0 && (
-                    <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-orange-500 px-1 text-[9px] font-bold text-white">
-                      {cartItemCount}
-                    </span>
-                  )}
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
-                >
-                  Login
-                </Link>
-
-                <Link
-                  to="/register"
-                  className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-700"
-                >
-                  Register
-                </Link>
-              </>
-            )}
-          </div>
-
-          {/* Mobile Actions */}
-          <div className="flex items-center gap-1 md:hidden">
-            <button
-              onClick={() => setSearchOpen(!searchOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100"
-              aria-label="Search"
+            <Link
+              to="/"
+              className="flex items-center text-2xl font-black transition group"
             >
-              <FiSearch size={21} />
-            </button>
+              <span className="text-white group-hover:text-orange-500 transition-all duration-300">
+                SHOP
+              </span>
+              <span className="text-orange-500 hover:text-white transition-all duration-300">
+                ORA
+              </span>
+            </Link>
 
-            {user && (
-              <Link
-                onClick={() => setMobileMenuOpen(false)}
-                to="/cart"
-                className="relative flex h-10 w-10 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100"
-                aria-label="Cart"
-              >
-                <FiShoppingBag size={21} />
+            {/* Search */}
 
-                {cartItemCount > 0 && (
-                  <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-gray-900 px-1 text-[9px] font-bold text-white">
-                    {cartItemCount}
-                  </span>
-                )}
-              </Link>
-            )}
-
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100"
-              aria-label="Menu"
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? <FiX size={23} /> : <FiMenu size={23} />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Search */}
-        {searchOpen && (
-          <div className="pb-4 md:hidden">
-            <form className="relative" onSubmit={handleSearchSubmit}>
-              <FiSearch
-                size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-              />
-
-              <input
-                autoFocus
-                type="search"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="text-gray-900 h-11 w-full rounded-xl border border-gray-200 bg-gray-50 pl-11 pr-4 text-sm outline-none focus:border-gray-400 focus:bg-white"
-              />
-
-              {searchQuery.trim() && (
-                <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
-                  {searchResults.length > 0 ? (
-                    <>
-                      <div className="max-h-80 overflow-y-auto">
-                        {searchResults.map((product) => (
-                          <button
-                            key={product.id}
-                            type="button"
-                            onClick={() => {
-                              const categorySlug = product.category
-                                ?.toLowerCase()
-                                .replace(/\s+/g, "-");
-
-                              const nameSlug = product.name
-                                ?.toLowerCase()
-                                .replace(/[^a-z0-9]+/g, "-")
-                                .replace(/(^-|-$)/g, "");
-
-                              navigate(
-                                `/products/${categorySlug}/${nameSlug}/${product.id}`,
-                              );
-
-                              setSearchQuery("");
-                              setSearchOpen(false);
-                            }}
-                            className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-gray-50"
-                          >
-                            <img
-                              src={product.images?.[0]}
-                              alt={product.name}
-                              className="h-12 w-12 shrink-0 rounded-lg object-cover"
-                            />
-
-                            <div className="min-w-0 flex-1">
-                              <p className="truncate text-sm font-medium text-gray-900">
-                                {product.name}
-                              </p>
-
-                              <p className="mt-0.5 text-xs text-gray-500">
-                                {product.brand}
-                              </p>
-
-                              <p className="mt-0.5 text-xs font-semibold text-gray-900">
-                                ₹{Number(product.price).toLocaleString("en-IN")}
-                              </p>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-
-                      <button
-                        type="submit"
-                        className="w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
-                        onClick={() => {
-                          setSearchOpen(false);
-                          setSearchQuery("");
-                        }}
-                      >
-                        View all results
-                      </button>
-                    </>
-                  ) : (
-                    <div className="px-4 py-5 text-center text-sm text-gray-500">
-                      No products found
-                    </div>
-                  )}
-                </div>
-              )}
-            </form>
-          </div>
-        )}
-      </div>
-
-      {/* ================= MOBILE MENU ================= */}
-      {mobileMenuOpen && (
-        <div className="border-t border-gray-400 bg-white md:hidden shadow-lg min-h-screen overscroll-none">
-          <nav className="mx-auto max-w-7xl px-4 py-4 sm:px-6 flex flex-col">
-            <div className="space-y-1 mb-4">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.name}
-                  to={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition ${
-                      isActive
-                        ? "bg-gray-100 text-gray-900"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                    }`
-                  }
-                >
-                  {item.name}
-
-                  <FiChevronDown
-                    size={15}
-                    className="-rotate-90 text-gray-400"
+            <div className="relative min-w-0 flex-1">
+              <form onSubmit={handleSearchSubmit}>
+                <div className="relative">
+                  <FiSearch
+                    size={18}
+                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
                   />
-                </NavLink>
-              ))}
+
+                  <input
+                    type="search"
+                    value={searchQuery}
+                    onFocus={() => setSearchOpen(true)}
+                    onChange={(event) => {
+                      setSearchQuery(event.target.value);
+                      setSearchOpen(true);
+                    }}
+                    placeholder="Search products..."
+                    className="w-full rounded-xl border border-gray-800 bg-gray-900 py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                  />
+                </div>
+              </form>
+
+              {/* Search results */}
+
+              {searchOpen && searchQuery.trim() && (
+                <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
+                  {searchResults.length > 0 ? (
+                    <div className="p-2">
+                      {searchResults.map((product) => (
+                        <Link
+                          key={product.productId || product.id}
+                          to={getProductPath(product)}
+                          onClick={handleSearchResultClick}
+                          className="flex items-center gap-3 rounded-xl p-3 transition hover:bg-gray-50"
+                        >
+                          <img
+                            src={product.images?.[0]}
+                            alt={product.name}
+                            className="h-14 w-14 rounded-xl bg-gray-100 object-cover"
+                          />
+
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-semibold text-gray-900">
+                              {product.name}
+                            </p>
+
+                            <p className="mt-1 text-xs text-gray-500">
+                              {product.brand} · {product.category}
+                            </p>
+
+                            <p className="mt-1 text-sm font-bold text-gray-900">
+                              ₹{Number(product.price).toLocaleString("en-IN")}
+                            </p>
+                          </div>
+
+                          <FiChevronRight
+                            size={16}
+                            className="shrink-0 text-gray-400"
+                          />
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="px-5 py-8 text-center">
+                      <p className="text-sm font-semibold text-gray-900">
+                        No products found
+                      </p>
+
+                      <p className="mt-1 text-xs text-gray-500">
+                        Try another search term.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* Mobile account links */}
-            <div className="grid grid-cols-2 gap-2 border-t border-gray-400 pt-4 mt-auto">
+            {/* Actions */}
+
+            <div className="flex shrink-0 items-center gap-2">
               {user ? (
                 <>
                   <Link
                     to="/wishlist"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-700"
+                    className="relative flex h-10 w-10 items-center justify-center rounded-xl text-gray-300 transition hover:bg-gray-900 hover:text-white"
+                    aria-label="Wishlist"
                   >
-                    <FiHeart size={17} />
-                    Wishlist
+                    <FiHeart size={19} />
+
+                    {wishlistCount > 0 && (
+                      <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-[10px] font-bold text-white">
+                        {wishlistCount}
+                      </span>
+                    )}
                   </Link>
 
                   <Link
                     to="/account"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-700"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl text-gray-300 transition hover:bg-gray-900 hover:text-white"
+                    aria-label="Account"
                   >
-                    <FiUser size={17} />
-                    Account
+                    <FiUser size={19} />
+                  </Link>
+
+                  <Link
+                    to="/cart"
+                    className="relative flex h-10 w-10 items-center justify-center rounded-xl text-gray-300 transition hover:bg-gray-900 hover:text-white"
+                    aria-label="Cart"
+                  >
+                    <FiShoppingBag size={19} />
+
+                    {cartCount > 0 && (
+                      <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-[10px] font-bold text-white">
+                        {cartCount}
+                      </span>
+                    )}
                   </Link>
                 </>
               ) : (
                 <>
                   <Link
                     to="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-700"
+                    className="rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-300 transition hover:bg-gray-900 hover:text-white"
                   >
                     Login
                   </Link>
 
                   <Link
                     to="/register"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center rounded-xl bg-gray-900 py-3 text-sm font-semibold text-white"
+                    className="rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
                   >
                     Register
                   </Link>
                 </>
               )}
             </div>
-          </nav>
-        </div>
-      )}
-
-      {/* ================= DESKTOP NAV ================= */}
-      <nav className="hidden border-t border-gray-100 md:block">
-        <div className="mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-8">
-          <div className="flex min-h-12 items-center justify-center gap-x-4 flex-wrap w-full">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.name}
-                to={item.path}
-                className={({ isActive }) =>
-                  `relative flex h-full whitespace-nowrap items-center text-sm font-medium transition p-2 px-3 ${
-                    isActive
-                      ? "text-orange-400"
-                      : "text-gray-400 hover:text-gray-100"
-                  }`
-                }
-              >
-                {item.name}
-
-                {/* Active underline */}
-                <span className="absolute bottom-0 left-0 h-0.5 w-full scale-x-0 bg-gray-900 transition-transform" />
-              </NavLink>
-            ))}
           </div>
         </div>
-      </nav>
+
+        {/* ---------------------------------------------------------------- */}
+        {/* Desktop Navigation */}
+        {/* ---------------------------------------------------------------- */}
+
+        <div className="border-b border-gray-800">
+          <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-6">
+            {/* Categories */}
+
+            <div className="relative justify-self-start">
+              <button
+                type="button"
+                onClick={() => setCategoriesOpen((prev) => !prev)}
+                className="flex h-12 cursor-pointer items-center gap-1.5 px-3 text-sm font-medium text-gray-300 transition hover:text-white"
+              >
+                Categories
+                <FiChevronDown
+                  size={15}
+                  className={`transition-transform ${
+                    categoriesOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {categoriesOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setCategoriesOpen(false)}
+                  />
+
+                  <div className="absolute left-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-gray-200 bg-white p-2 shadow-2xl">
+                    <Link
+                      to="/products"
+                      onClick={() => setCategoriesOpen(false)}
+                      className="block rounded-xl bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-900 transition hover:bg-orange-50 hover:text-orange-600"
+                    >
+                      All Products
+                    </Link>
+
+                    <div className="my-2 border-t border-gray-100" />
+
+                    {allCategoryLinks.map((category) => (
+                      <Link
+                        key={category.name}
+                        to={category.path}
+                        onClick={() => setCategoriesOpen(false)}
+                        className="flex items-center justify-between rounded-xl px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-orange-50 hover:text-orange-600"
+                      >
+                        {category.name}
+
+                        <FiChevronRight size={15} className="text-gray-400" />
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Centered navigation */}
+
+            <nav className="flex items-center justify-center">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.name}
+                  to={item.path}
+                  end={item.path === "/products"}
+                  className={({ isActive }) =>
+                    `relative flex h-12 items-center whitespace-nowrap px-3 text-sm font-medium transition ${
+                      isActive
+                        ? "text-orange-400"
+                        : "text-gray-400 hover:text-gray-100"
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      {item.name}
+
+                      <span
+                        className={`absolute bottom-0 left-2 right-2 h-0.5 origin-center bg-orange-500 transition-transform ${
+                          isActive ? "scale-x-100" : "scale-x-0"
+                        }`}
+                      />
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </nav>
+
+            {/* Right balance area */}
+
+            <div />
+          </div>
+        </div>
+      </div>
+
+      {/* ================================================================== */}
+      {/* Mobile */}
+      {/* ================================================================== */}
+
+      <div className="md:hidden">
+        {/* ---------------------------------------------------------------- */}
+        {/* Mobile top bar */}
+        {/* ---------------------------------------------------------------- */}
+
+        <div className="flex h-[72px] items-center justify-between border-b border-gray-800 px-4">
+          {/* Menu */}
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen((prev) => !prev);
+              setSearchOpen(false);
+            }}
+            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-gray-300 transition hover:bg-gray-900 hover:text-white"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+          >
+            {mobileMenuOpen ? <FiX size={22} /> : <FiMenu size={22} />}
+          </button>
+
+          {/* Logo */}
+
+          <Link
+            to="/"
+            onClick={closeMobileMenu}
+            className="text-xl font-black tracking-tight text-white"
+          >
+            Shopora
+          </Link>
+
+          {/* Cart */}
+
+          <Link
+            to="/cart"
+            onClick={closeMobileMenu}
+            className="relative flex h-10 w-10 items-center justify-center rounded-xl text-gray-300 transition hover:bg-gray-900 hover:text-white"
+            aria-label="Cart"
+          >
+            <FiShoppingBag size={20} />
+
+            {cartCount > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-[10px] font-bold text-white">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+        </div>
+
+        {/* ---------------------------------------------------------------- */}
+        {/* Mobile Search */}
+        {/* ---------------------------------------------------------------- */}
+
+        <div className="border-b border-gray-800 px-4 py-3">
+          <form onSubmit={handleSearchSubmit}>
+            <div className="relative">
+              <FiSearch
+                size={18}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+
+              <input
+                type="search"
+                value={searchQuery}
+                onFocus={() => setSearchOpen(true)}
+                onChange={(event) => {
+                  setSearchQuery(event.target.value);
+                  setSearchOpen(true);
+                }}
+                placeholder="Search products..."
+                className="w-full rounded-xl border border-gray-800 bg-gray-900 py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+              />
+            </div>
+          </form>
+
+          {/* Mobile search results */}
+
+          {searchOpen && searchQuery.trim() && (
+            <div className="relative z-[60] mt-2 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
+              {searchResults.length > 0 ? (
+                <div className="p-2">
+                  {searchResults.map((product) => (
+                    <Link
+                      key={product.productId || product.id}
+                      to={getProductPath(product)}
+                      onClick={handleSearchResultClick}
+                      className="flex items-center gap-3 rounded-xl p-3 transition hover:bg-gray-50"
+                    >
+                      <img
+                        src={product.images?.[0]}
+                        alt={product.name}
+                        className="h-12 w-12 rounded-xl bg-gray-100 object-cover"
+                      />
+
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-gray-900">
+                          {product.name}
+                        </p>
+
+                        <p className="mt-1 text-xs text-gray-500">
+                          {product.brand} · {product.category}
+                        </p>
+
+                        <p className="mt-1 text-sm font-bold text-gray-900">
+                          ₹{Number(product.price).toLocaleString("en-IN")}
+                        </p>
+                      </div>
+
+                      <FiChevronRight
+                        size={16}
+                        className="shrink-0 text-gray-400"
+                      />
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="px-5 py-7 text-center">
+                  <p className="text-sm font-semibold text-gray-900">
+                    No products found
+                  </p>
+
+                  <p className="mt-1 text-xs text-gray-500">
+                    Try another search term.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ---------------------------------------------------------------- */}
+        {/* Mobile Menu */}
+        {/* ---------------------------------------------------------------- */}
+
+        {mobileMenuOpen && (
+          <div className="fixed inset-x-0 bottom-0 top-[72px] z-50 overflow-y-auto border-t border-gray-800 bg-gray-950 md:hidden">
+            <div className="mx-auto w-full max-w-7xl px-4 py-5">
+              {/* Account */}
+
+              <div className="mb-5 grid grid-cols-2 gap-3">
+                {user ? (
+                  <>
+                    <Link
+                      to="/account"
+                      onClick={closeMobileMenu}
+                      className="flex items-center justify-center gap-2 rounded-xl border border-gray-800 bg-gray-900 px-4 py-3 text-sm font-semibold text-gray-200 transition hover:border-orange-500 hover:text-orange-400"
+                    >
+                      <FiUser size={17} />
+                      Account
+                    </Link>
+
+                    <Link
+                      to="/wishlist"
+                      onClick={closeMobileMenu}
+                      className="relative flex items-center justify-center gap-2 rounded-xl border border-gray-800 bg-gray-900 px-4 py-3 text-sm font-semibold text-gray-200 transition hover:border-orange-500 hover:text-orange-400"
+                    >
+                      <FiHeart size={17} />
+                      Wishlist
+                      {wishlistCount > 0 && (
+                        <span className="rounded-full bg-orange-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                          {wishlistCount}
+                        </span>
+                      )}
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      onClick={closeMobileMenu}
+                      className="flex items-center justify-center rounded-xl border border-gray-800 bg-gray-900 px-4 py-3 text-sm font-semibold text-gray-200 transition hover:border-orange-500 hover:text-orange-400"
+                    >
+                      Login
+                    </Link>
+
+                    <Link
+                      to="/register"
+                      onClick={closeMobileMenu}
+                      className="flex items-center justify-center rounded-xl bg-orange-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+                    >
+                      Register
+                    </Link>
+                  </>
+                )}
+              </div>
+
+              {/* All Products */}
+
+              <Link
+                to="/products"
+                onClick={closeMobileMenu}
+                className="mb-2 flex items-center justify-between rounded-xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-orange-500"
+              >
+                All Products
+                <FiChevronRight size={17} />
+              </Link>
+
+              {/* Categories */}
+
+              <div className="overflow-hidden rounded-xl border border-gray-800">
+                <button
+                  type="button"
+                  onClick={() => setMobileCategoriesOpen((prev) => !prev)}
+                  className="flex w-full cursor-pointer items-center justify-between px-4 py-3.5 text-sm font-semibold text-gray-200 transition hover:bg-gray-900"
+                >
+                  <span>Categories</span>
+
+                  <FiChevronDown
+                    size={17}
+                    className={`transition-transform ${
+                      mobileCategoriesOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {mobileCategoriesOpen && (
+                  <div className="border-t border-gray-800 bg-gray-900/50 p-2">
+                    {allCategoryLinks.map((category) => (
+                      <Link
+                        key={category.name}
+                        to={category.path}
+                        onClick={closeMobileMenu}
+                        className="flex items-center justify-between rounded-lg px-3 py-3 text-sm text-gray-400 transition hover:bg-gray-900 hover:text-orange-400"
+                      >
+                        {category.name}
+
+                        <FiChevronRight size={15} />
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Navigation */}
+
+              <nav className="mt-3 overflow-hidden rounded-xl border border-gray-800">
+                {navItems.map((item) => (
+                  <NavLink
+                    key={item.name}
+                    to={item.path}
+                    end={item.path === "/products"}
+                    onClick={closeMobileMenu}
+                    className={({ isActive }) =>
+                      `flex items-center justify-between border-b border-gray-800 px-4 py-3.5 text-sm font-medium transition last:border-b-0 ${
+                        isActive
+                          ? "bg-orange-500/10 text-orange-400"
+                          : "text-gray-300 hover:bg-gray-900 hover:text-white"
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <span>{item.name}</span>
+
+                        <FiChevronRight
+                          size={16}
+                          className={
+                            isActive ? "text-orange-400" : "text-gray-600"
+                          }
+                        />
+                      </>
+                    )}
+                  </NavLink>
+                ))}
+              </nav>
+
+              {/* Secondary Links */}
+
+              <div className="mt-5 grid grid-cols-2 gap-3 pb-6">
+                <Link
+                  to="/orders"
+                  onClick={closeMobileMenu}
+                  className="flex items-center justify-center rounded-xl border border-gray-800 px-4 py-3 text-sm font-medium text-gray-400 transition hover:border-gray-700 hover:bg-gray-900 hover:text-white"
+                >
+                  Orders
+                </Link>
+
+                <Link
+                  to="/cart"
+                  onClick={closeMobileMenu}
+                  className="flex items-center justify-center gap-2 rounded-xl border border-gray-800 px-4 py-3 text-sm font-medium text-gray-400 transition hover:border-gray-700 hover:bg-gray-900 hover:text-white"
+                >
+                  Cart
+                  {cartCount > 0 && (
+                    <span className="rounded-full bg-orange-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </header>
   );
-};
+}
 
 export default Header;

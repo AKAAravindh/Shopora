@@ -77,8 +77,8 @@ const HeroSection = () => {
   const slide = heroSlides[activeSlide];
 
   return (
-    <section className="max-w-[1920px] px-4 pt-4 sm:px-6 mx-0 lg:px-8">
-      <div className="relative min-h-125 overflow-hidden rounded-3xl bg-gray-100">
+    <section className="mx-auto w-full max-w-[1920px] px-4 pt-4 sm:px-6 lg:px-8">
+      <div className="relative min-h-[560px] overflow-hidden rounded-3xl bg-gray-100 sm:min-h-[600px] lg:min-h-[640px]">
         {/* Background image */}
         <AnimatePresence mode="sync">
           <motion.img
@@ -111,7 +111,7 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-linear-to-r from-black/50 via-black/20 to-transparent" />
 
         {/* Content */}
-        <div className="relative flex min-h-125 max-w-xl items-center px-8 py-16 sm:px-12 lg:px-16">
+        <div className="relative flex min-h-[560px] max-w-xl items-center px-8 py-16 sm:min-h-[600px] sm:px-12 lg:min-h-[640px] lg:px-16">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSlide}
@@ -129,7 +129,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15, duration: 0.5 }}
-                className="mb-4 text-sm font-semibold uppercase tracking-[0.25em]"
+                className="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-orange-400"
               >
                 {slide.eyebrow}
               </motion.p>
@@ -139,7 +139,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25, duration: 0.6 }}
-                className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl"
+                className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl"
               >
                 {slide.title}
               </motion.h1>
@@ -163,7 +163,7 @@ const HeroSection = () => {
               >
                 <Link
                   to={slide.primaryLink}
-                  className="rounded-full bg-white px-7 py-3 text-sm font-semibold text-gray-900 transition hover:-translate-y-0.5 hover:bg-gray-100"
+                  className="rounded-full bg-orange-500 px-7 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-orange-600"
                 >
                   {slide.primaryText}
                 </Link>
@@ -187,12 +187,12 @@ const HeroSection = () => {
               type="button"
               onClick={() => setActiveSlide(index)}
               aria-label={`Go to slide ${index + 1}`}
-              className="group flex h-5 items-center"
+              className="group flex h-5 cursor-pointer items-center"
             >
               <span
                 className={`block h-1 rounded-full transition-all duration-500 ${
                   index === activeSlide
-                    ? "w-10 bg-white"
+                    ? "w-10 bg-orange-500"
                     : "w-5 bg-white/40 group-hover:bg-white/70"
                 }`}
               />
